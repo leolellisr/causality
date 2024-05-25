@@ -1,0 +1,416 @@
+{
+  "id": 0,
+  "name": "root",
+  "value": 2.0,
+  "l": [
+    {
+      "id": 21,
+      "name": "episode",
+      "value": "launching event",
+      "l": [
+        {
+          "id": 34,
+          "name": "episode 1",
+          "value": "white ball moving toward red ball",
+          "l": [
+            {
+              "id": 26,
+              "name": "triggering situation",
+              "value": "approximation",
+              "l": [
+                {
+                  "id": 29,
+                  "name": "start time",
+                  "value": "1",
+                  "l": [],
+                  "type": 8,
+                  "category": "TimeStep",
+                  "scope": 1
+                },
+                {
+                  "id": 27,
+                  "name": "agent",
+                  "value": "white ball",
+                  "l": [
+                    {
+                      "id": 78,
+                      "name": "property",
+                      "value": "velocity \u003e 0",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    },
+                    {
+                      "id": 36,
+                      "name": "habit",
+                      "value": "moving",
+                      "l": [
+                        {
+                          "id": 40,
+                          "name": "property",
+                          "value": "formula",
+                          "l": [],
+                          "type": 1,
+                          "category": "Property",
+                          "scope": 1
+                        }
+                      ],
+                      "type": 16,
+                      "category": "Action",
+                      "scope": 1
+                    },
+                    {
+                      "id": 60,
+                      "name": "property",
+                      "value": "original position",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    }
+                  ],
+                  "type": 0,
+                  "category": "AbstractObject",
+                  "scope": 1
+                },
+                {
+                  "id": 28,
+                  "name": "patient",
+                  "value": "red ball",
+                  "l": [
+                    {
+                      "id": 39,
+                      "name": "property",
+                      "value": "position",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    },
+                    {
+                      "id": 79,
+                      "name": "property",
+                      "value": "velocity \u003d 0",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    }
+                  ],
+                  "type": 0,
+                  "category": "AbstractObject",
+                  "scope": 1
+                }
+              ],
+              "type": 7,
+              "category": "Configuration",
+              "scope": 1
+            },
+            {
+              "id": 48,
+              "name": "terminal situation",
+              "value": "",
+              "l": [
+                {
+                  "id": 58,
+                  "name": "patient",
+                  "value": "red ball",
+                  "l": [
+                    {
+                      "id": 59,
+                      "name": "property",
+                      "value": "position",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    },
+                    {
+                      "id": 81,
+                      "name": "property",
+                      "value": "velocity \u003d 0",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    }
+                  ],
+                  "type": 0,
+                  "category": "AbstractObject",
+                  "scope": 1
+                },
+                {
+                  "id": 49,
+                  "name": "collision time",
+                  "value": "3",
+                  "l": [],
+                  "type": 8,
+                  "category": "TimeStep",
+                  "scope": 1
+                },
+                {
+                  "id": 55,
+                  "name": "agent",
+                  "value": "white ball",
+                  "l": [
+                    {
+                      "id": 80,
+                      "name": "property",
+                      "value": "velocity \u003e 0",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    },
+                    {
+                      "id": 61,
+                      "name": "property",
+                      "value": "patient\u0027s position",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    }
+                  ],
+                  "type": 0,
+                  "category": "AbstractObject",
+                  "scope": 1
+                }
+              ],
+              "type": 7,
+              "category": "Configuration",
+              "scope": 1
+            }
+          ],
+          "type": 4,
+          "category": "Episode",
+          "scope": 1
+        },
+        {
+          "id": 37,
+          "name": "episode 2",
+          "value": "collision",
+          "l": [
+            {
+              "id": 85,
+              "name": "triggering situation",
+              "value": "",
+              "l": [
+                {
+                  "id": 90,
+                  "name": "agent",
+                  "value": "white ball",
+                  "l": [
+                    {
+                      "id": 91,
+                      "name": "property",
+                      "value": "velocity \u003e 0",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    },
+                    {
+                      "id": 94,
+                      "name": "property",
+                      "value": "patient\u0027s position",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    },
+                    {
+                      "id": 92,
+                      "name": "habit",
+                      "value": "moving",
+                      "l": [
+                        {
+                          "id": 93,
+                          "name": "property",
+                          "value": "formula",
+                          "l": [],
+                          "type": 1,
+                          "category": "Property",
+                          "scope": 1
+                        }
+                      ],
+                      "type": 16,
+                      "category": "Action",
+                      "scope": 1
+                    }
+                  ],
+                  "type": 0,
+                  "category": "AbstractObject",
+                  "scope": 1
+                },
+                {
+                  "id": 86,
+                  "name": "patient",
+                  "value": "red ball",
+                  "l": [
+                    {
+                      "id": 87,
+                      "name": "property",
+                      "value": "position",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    },
+                    {
+                      "id": 88,
+                      "name": "property",
+                      "value": "velocity \u003d 0",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    }
+                  ],
+                  "type": 0,
+                  "category": "AbstractObject",
+                  "scope": 1
+                },
+                {
+                  "id": 89,
+                  "name": "collision time",
+                  "value": "3",
+                  "l": [],
+                  "type": 8,
+                  "category": "TimeStep",
+                  "scope": 1
+                }
+              ],
+              "type": 7,
+              "category": "Configuration",
+              "scope": 1
+            },
+            {
+              "id": 95,
+              "name": "terminal situation",
+              "value": "",
+              "l": [
+                {
+                  "id": 104,
+                  "name": "collision time",
+                  "value": "3",
+                  "l": [],
+                  "type": 8,
+                  "category": "TimeStep",
+                  "scope": 1
+                },
+                {
+                  "id": 96,
+                  "name": "agent",
+                  "value": "white ball",
+                  "l": [
+                    {
+                      "id": 99,
+                      "name": "habit",
+                      "value": "collide",
+                      "l": [
+                        {
+                          "id": 100,
+                          "name": "property",
+                          "value": "formula",
+                          "l": [],
+                          "type": 1,
+                          "category": "Property",
+                          "scope": 1
+                        }
+                      ],
+                      "type": 16,
+                      "category": "Action",
+                      "scope": 1
+                    },
+                    {
+                      "id": 97,
+                      "name": "property",
+                      "value": "velocity \u003d 0",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    },
+                    {
+                      "id": 98,
+                      "name": "property",
+                      "value": "patient\u0027s position",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    }
+                  ],
+                  "type": 0,
+                  "category": "AbstractObject",
+                  "scope": 1
+                },
+                {
+                  "id": 101,
+                  "name": "patient",
+                  "value": "red ball",
+                  "l": [
+                    {
+                      "id": 107,
+                      "name": "habit",
+                      "value": "collide",
+                      "l": [
+                        {
+                          "id": 108,
+                          "name": "property",
+                          "value": "formula",
+                          "l": [],
+                          "type": 1,
+                          "category": "Property",
+                          "scope": 1
+                        }
+                      ],
+                      "type": 16,
+                      "category": "Action",
+                      "scope": 1
+                    },
+                    {
+                      "id": 102,
+                      "name": "property",
+                      "value": "position",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    },
+                    {
+                      "id": 103,
+                      "name": "property",
+                      "value": "velocity \u003e 0",
+                      "l": [],
+                      "type": 1,
+                      "category": "Property",
+                      "scope": 1
+                    }
+                  ],
+                  "type": 0,
+                  "category": "AbstractObject",
+                  "scope": 1
+                }
+              ],
+              "type": 7,
+              "category": "Configuration",
+              "scope": 1
+            }
+          ],
+          "type": 4,
+          "category": "Episode",
+          "scope": 1
+        }
+      ],
+      "type": 4,
+      "category": "Episode",
+      "scope": 1
+    }
+  ],
+  "type": 1,
+  "category": "",
+  "scope": 1
+}

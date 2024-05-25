@@ -37,8 +37,8 @@ public class OutsideCommunication {
 	public int clientID;
 	public IntW marta_handle;
 	public MotorI NeckYaw_m, HeadPitch_m;       
-	public SensorI vision;
-        public SensorI depth;
+	public SensorI positionR;
+        public SensorI positionB;
 	public SensorI marta_orientation;
 	public SensorI marta_position;
 	public ArrayList<SensorI> vision_orientations;
@@ -65,6 +65,7 @@ public class OutsideCommunication {
 		// System.out.println("Program started");
 		vrep = new remoteApi();
 		vrep.simxFinish(-1); // just in case, close all opened connections
+                
 		clientID = vrep.simxStart("127.0.0.1", 25000, true, true, 5000, 5);
 
 		if (clientID == -1) {
@@ -85,61 +86,45 @@ public class OutsideCommunication {
 		
 
 		//////////////////////////////////////////////////////////////////
-		// Sensors - Vision
+		// Sensors - Position
 		//////////////////////////////////////////////////////////////////
-		IntW vision_handles;
+		IntW objR_handle;
 
-		String vision_sensors_name = "Vision_sensor";
-		vision_handles = new IntW(-1);
-
-			//// System.out.println(proximity_sensors_name);
-
-		vrep.simxGetObjectHandle(clientID, vision_sensors_name, vision_handles, remoteApi.simx_opmode_blocking);
-			if (vision_handles.getValue() == -1)
+		String objR_sensors_name = "red";
+		objR_handle = new IntW(-1);
+		vrep.simxGetObjectHandle(clientID, objR_sensors_name, objR_handle, remoteApi.simx_opmode_blocking);
+			if (objR_handle.getValue() == -1)
 				System.out.println("Error on connenting to sensor ");
 			else
 				System.out.println("Connected to sensor ");
 		
 
-		vision = new VisionVrep(vrep, clientID, vision_handles);
-                depth = new DepthVrep(vrep, clientID, vision_handles, vision.getStage(), vision);    
-		try {
+		positionR = new PosVrep(vrep, clientID, objR_handle);
+                
+		IntW objB_handle;
+
+		String objB_sensors_name = "blue";
+		objB_handle = new IntW(-1);
+		vrep.simxGetObjectHandle(clientID, objB_sensors_name, objB_handle, remoteApi.simx_opmode_blocking);
+			if (objB_handle.getValue() == -1)
+				System.out.println("Error on connenting to sensor ");
+			else
+				System.out.println("Connected to sensor ");
+		
+
+		positionB = new PosVrep(vrep, clientID, objB_handle);
+                
+                try {
 			Thread.sleep(1000);
 		} catch (Exception e) {
 			Thread.currentThread().interrupt();
 		}
 
-                //Get the initial position and orientation of obstacles (cuboids) to set during the learning mode
-                for (int i = 0; i < nObjs; i++) {
-                    FloatWA position = new FloatWA(3);
-                    FloatWA orientation = new FloatWA(3);
-
-                    obj_handle[i] = new IntW(-1);
-
-                    String s = "obj" + (i+1);
-
-                    vrep.simxGetObjectHandle(clientID, s, obj_handle[i], remoteApi.simx_opmode_blocking);
-
-                    vrep.simxGetObjectPosition(clientID, obj_handle[i].getValue(), -1, position, vrep.simx_opmode_blocking);
-                    vrep.simxGetObjectOrientation(clientID, obj_handle[i].getValue(), -1, orientation, remoteApi.simx_opmode_blocking);
-                    if(debug) System.out.println("obj "+i+" position - x: "+position.getArray()[0]+", y: "+position.getArray()[1]+", z: "+position.getArray()[2]+
-                            "\n obj "+i+" orientation - x: "+orientation.getArray()[0]+", y: "+orientation.getArray()[1]+", z: "+orientation.getArray()[2]);
-                    allobjsPositions.add(position);
-                    objsOrientations.add(orientation);
-                            }
                 
-                objsPositions = allobjsPositions.subList(0,3);
 		// START SIMULATION
 		vrep.simxStartSimulation(clientID, remoteApi.simx_opmode_blocking);
 
-		// Vision initialization reading
-		int ret = vrep.simxGetVisionSensorImage(clientID, vision_handles.getValue(), null, null, 1,
-					remoteApi.simx_opmode_streaming);
-		if (ret == remoteApi.simx_return_ok  || ret == remoteApi.simx_return_novalue_flag) {
-			System.out.println("init ok ");
-		} else {
-				System.exit(1);
-		}
+		
 	
 
 	

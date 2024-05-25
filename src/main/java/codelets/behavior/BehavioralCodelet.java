@@ -45,7 +45,7 @@ public class BehavioralCodelet extends Codelet {
     private int[] fovea3 = {10, 11, 14, 15};
     public BehavioralCodelet (OutsideCommunication outc, int tWindow, int sensDim, String mode) throws IOException {
         oc = outc;
-        this.stage = this.oc.vision.getStage();
+        //this.stage = this.oc.vision.getStage();
         if(this.stage == 1) angle_step = 0.1f;
 	if(this.stage == 2) angle_step = 0.05f;
 	if(this.stage == 3) angle_step = 0.01f;
