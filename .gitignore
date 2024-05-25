@@ -1,0 +1,8 @@
+/build/
+/dist/
+/.gradle/
+/profile/
+/data/
+/models/
+/recordings/
+/backup/
