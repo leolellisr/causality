@@ -15,6 +15,7 @@ package codelets.sensors;
 import CommunicationInterface.SensorI;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.representation.idea.Idea;
 //import codelets.motor.Lock;
 
 /**
@@ -25,13 +26,14 @@ import br.unicamp.cst.core.entities.MemoryObject;
 public class Sensor_Position extends Codelet {
     private MemoryObject position_read;
     private SensorI position;
-    private int stage;
+    private int stage,step;
     private String output;
     
     public Sensor_Position(SensorI position, String output){
         this.position = position;
         this.stage = this.position.getStage();
         this.output = output;
+        this.step = 0;
     }
 
     public int getStage() {
@@ -55,8 +57,8 @@ public class Sensor_Position extends Codelet {
 
     @Override
     public void proc() {
-
-        position_read.setI(position.getData());
+        this.step += 1;
+        position_read.setI(new Idea("position"+position.getObjHandle()+this.step, position.getData(),3));
         /*System.out.println("Sensor position:"+this.stage);
         System.out.println("Sensor position getStage:"+getStage());
         System.out.println("Sensor position.getStage:"+position.getStage());

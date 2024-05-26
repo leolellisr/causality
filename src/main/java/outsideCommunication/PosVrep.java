@@ -91,6 +91,13 @@ public class PosVrep implements SensorI{
     }
     
     @Override
+    
+    public String getObjHandle() {
+           obj_handle.getValue();
+           return String.valueOf(obj_handle.getValue());
+    }
+
+    @Override
     public Object getData() {
        try {
             Thread.sleep(1000);

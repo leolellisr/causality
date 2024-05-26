@@ -22,7 +22,7 @@ public interface SensorI {
     public int getExp();
     public Object getData();
     public void resetData();
-
+    public String getObjHandle();
     public int getStage();
 
     public void setStage(int stage);

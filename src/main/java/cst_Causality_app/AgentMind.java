@@ -55,10 +55,10 @@ public class AgentMind extends Mind {
         //////////////////////////////////////////////
     
         //Position
-        List posR_data = Collections.synchronizedList(new ArrayList<Float>(Posdimension));
+        Idea posR_data = new Idea("position_red", Collections.synchronizedList(new ArrayList<Float>(Posdimension)), 3);
         MemoryObject posR_read = createMemoryObject("POSR", posR_data);
 
-        List posB_data = Collections.synchronizedList(new ArrayList<Float>(Posdimension));
+        Idea posB_data = new Idea("position_blue", Collections.synchronizedList(new ArrayList<Float>(Posdimension)), 3);
         MemoryObject posB_read = createMemoryObject("POSB", posB_data);
 
         //Position buffer
