@@ -18,7 +18,6 @@ import coppelia.remoteApi;
 
 import java.util.ArrayList;
 
-import CommunicationInterface.MotorI;
 import CommunicationInterface.SensorI;
 import coppelia.CharWA;
 import coppelia.FloatWA;
@@ -35,29 +34,16 @@ public class OutsideCommunication {
 
 	public remoteApi vrep;
 	public int clientID;
-	public IntW marta_handle;
-	public MotorI NeckYaw_m, HeadPitch_m;       
 	public SensorI positionR;
         public SensorI positionB;
-	public SensorI marta_orientation;
-	public SensorI marta_position;
-	public ArrayList<SensorI> vision_orientations;
-        public static final int Resolution = 256;
         public IntW[] obj_handle;
-        private int nObjs = 4;
+        private int nObjs = 2;
         private final boolean debug = false;
-        private List<FloatWA> objsPositions;
-        private ArrayList<FloatWA> allobjsPositions;
-        private ArrayList<FloatWA> objsOrientations;
 
   
 	public OutsideCommunication() {
 		vrep = new remoteApi();
-		vision_orientations = new ArrayList<>();
                 obj_handle = new IntW[nObjs];
-                objsPositions = new ArrayList<>();
-                allobjsPositions = new ArrayList<>();
-                objsOrientations = new ArrayList<>();
 
 	}
 
@@ -129,32 +115,4 @@ public class OutsideCommunication {
 
 	
 			}
-	
-	public void shuffle_positions(){
-            Collections.shuffle(objsPositions);
-            for (int i = 0; i < nObjs-1; i++) {
-                allobjsPositions.set(i, objsPositions.get(i));
-            }
-        }
-        
-        public void set_object_back(int obj) throws InterruptedException{
-            int time = 500;
-            vrep.simxSetObjectPosition(clientID, obj_handle[obj].getValue(), -1, allobjsPositions.get(3), vrep.simx_opmode_oneshot);        
-            if (obj == 0 || obj == 2) {
-                time = time*2;
-            }
-            try {
-                Thread.sleep(time);
-            } catch (Exception e) {
-                Thread.currentThread().interrupt();
-            }    
-        }
-
-        public void reset_positions(){
-            for (int i = 0; i < nObjs; i++) {
-                vrep.simxSetObjectPosition(clientID, obj_handle[i].getValue(), -1, allobjsPositions.get(i), vrep.simx_opmode_oneshot);
-            }
-        }
-        
-
 }
