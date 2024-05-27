@@ -13,6 +13,7 @@ package sensory;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.representation.idea.Idea;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -74,6 +75,7 @@ public class SensorBufferCodelet extends Codelet {
             sonar_buffer_list.remove(0);
         }
         
+        //Idea sensor_input_idea = (Idea) sensor_input.getI();
         Object sensor_input_data = (Object) sensor_input.getI();
         MemoryObject cloned_data = null;
         
@@ -102,7 +104,7 @@ public class SensorBufferCodelet extends Codelet {
         }
         
         sonar_buffer_list.add(cloned_data);
-
+       // buffer_output.setI(sonar_buffer_list);
                 
 //        System.out.println("BUFFER SIZE "+sonar_buffer_list.size());
     }

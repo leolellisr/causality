@@ -128,8 +128,8 @@ public class PosVrep implements SensorI{
             pos_data.set(j, position_array.get(j));
         }
         printToFile(position_array, String.valueOf(obj_handle.getValue()));
-        Idea position_idea = Idea.createIdea("position",pos_data,3);
-        return position_idea;
+        //Idea position_idea = Idea.createIdea("position",pos_data,3);
+        return pos_data;
         
     }
     

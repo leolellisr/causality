@@ -58,7 +58,8 @@ public class Sensor_Position extends Codelet {
     @Override
     public void proc() {
         this.step += 1;
-        position_read.setI(new Idea("position"+position.getObjHandle()+this.step, position.getData(),3));
+        position_read.setI(position.getData());
+                //new Idea("position"+position.getObjHandle()+this.step, position.getData(),3)
         /*System.out.println("Sensor position:"+this.stage);
         System.out.println("Sensor position getStage:"+getStage());
         System.out.println("Sensor position.getStage:"+position.getStage());

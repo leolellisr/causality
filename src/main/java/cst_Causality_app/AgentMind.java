@@ -19,7 +19,7 @@ import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.representation.idea.Idea;
 import sensory.SensorBufferCodelet;
-
+import codelets.causality.*;
 import codelets.sensors.Sensor_Position;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,10 +54,10 @@ public class AgentMind extends Mind {
         //////////////////////////////////////////////
     
         //Position
-        Idea posR_data = new Idea("position_red", Collections.synchronizedList(new ArrayList<Float>(Posdimension)), 3);
+        List posR_data = Collections.synchronizedList(new ArrayList<Float>(Posdimension));
         MemoryObject posR_read = createMemoryObject("POSR", posR_data);
 
-        Idea posB_data = new Idea("position_blue", Collections.synchronizedList(new ArrayList<Float>(Posdimension)), 3);
+        List posB_data = Collections.synchronizedList(new ArrayList<Float>(Posdimension));
         MemoryObject posB_read = createMemoryObject("POSB", posB_data);
 
         //Position buffer
@@ -67,7 +67,10 @@ public class AgentMind extends Mind {
         List posB_buffer_list = Collections.synchronizedList(new ArrayList<Memory>(Buffersize));
         MemoryObject posB_bufferMO = createMemoryObject("POSB_BUFFER",posB_buffer_list);
         
-        
+        //Causality
+        Idea causality_idea = new Idea("causality", Collections.synchronizedList(new ArrayList<Object>(Posdimension)), 1);
+        MemoryObject causalityMO = createMemoryObject("CAUSALITY", causality_idea);
+
 //        
 //        
 //        ////////////////////////////////////////////
@@ -94,7 +97,11 @@ public class AgentMind extends Mind {
         posB_buffer.addOutput(posB_bufferMO);
         insertCodelet(posB_buffer);
         
-        
+        Codelet causality = new CausalityCodelet("POSR_BUFFER", "POSB_BUFFER", "CAUSALITY", Posdimension);
+        causality.addInput(posR_bufferMO);
+        causality.addInput(posB_bufferMO);
+        causality.addOutput(causalityMO);
+        insertCodelet(causality);
         ///////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////
         
