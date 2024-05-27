@@ -32,7 +32,6 @@ import java.util.Map;
 
 /**
  *
- * @author L. M. Berto
  * @author L. L. Rossi (leolellisr)
  */
 public class AgentMind extends Mind {
