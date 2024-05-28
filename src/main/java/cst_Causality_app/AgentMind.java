@@ -51,7 +51,7 @@ public class AgentMind extends Mind {
         //////////////////////////////////////////////
         //Declare Memory Objects
         //////////////////////////////////////////////
-    
+        oc.joint_m.setPos(50);
         //Position
         List posR_data = Collections.synchronizedList(new ArrayList<Float>(Posdimension));
         MemoryObject posR_read = createMemoryObject("POSR", posR_data);
@@ -96,7 +96,7 @@ public class AgentMind extends Mind {
         posB_buffer.addOutput(posB_bufferMO);
         insertCodelet(posB_buffer);
         
-        Codelet causality = new CausalityCodelet("POSR_BUFFER", "POSB_BUFFER", "CAUSALITY", Posdimension);
+        Codelet causality = new CausalityCodelet(oc, "POSR_BUFFER", "POSB_BUFFER", "CAUSALITY", Posdimension);
         causality.addInput(posR_bufferMO);
         causality.addInput(posB_bufferMO);
         causality.addOutput(causalityMO);

@@ -18,6 +18,7 @@ import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import java.util.ArrayList;
 import java.util.List;
+import outsideCommunication.OutsideCommunication;
 //import codelets.motor.Lock;
 
 /**
@@ -32,11 +33,13 @@ public class CausalityCodelet extends Codelet {
     private String input_red, input_blue, output;
     private List input_red_idea, input_blue_idea;
     private Idea output_idea;
-    public CausalityCodelet(String input_red, String input_blue, String output, int dimension){
+    private OutsideCommunication oc;
+    public CausalityCodelet(OutsideCommunication oc,String input_red, String input_blue, String output, int dimension){
         this.input_red = input_red;
         this.input_blue = input_blue;
         this.output = output; 
         this.dimension = 0;
+        this.oc = oc;
 
     }
     
@@ -60,6 +63,7 @@ public class CausalityCodelet extends Codelet {
 
     @Override
     public void proc() {
+        this.oc.joint_m.setPos(50);
     	try {
             Thread.sleep(50);
         } catch (Exception e) {

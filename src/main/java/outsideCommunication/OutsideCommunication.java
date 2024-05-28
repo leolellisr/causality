@@ -12,6 +12,7 @@
 
 package outsideCommunication;
 
+import CommunicationInterface.MotorI;
 import coppelia.IntW;
 //import coppelia.IntWA;
 import coppelia.remoteApi;
@@ -39,7 +40,8 @@ public class OutsideCommunication {
         public IntW[] obj_handle;
         private int nObjs = 2;
         private final boolean debug = false;
-
+        public MotorI joint_m;
+                
   
 	public OutsideCommunication() {
 		vrep = new remoteApi();
@@ -99,6 +101,15 @@ public class OutsideCommunication {
 		
 
 		positionB = new PosVrep(vrep, clientID, objB_handle);
+                
+                IntW joint = new IntW(-1);
+           
+		vrep.simxGetObjectHandle(clientID, "Prismatic_joint", joint, remoteApi.simx_opmode_blocking);
+	
+		
+		joint_m = new MotorVrep(vrep, clientID, joint.getValue());
+                
+                joint_m.setPos(50);
                 
                 try {
 			Thread.sleep(1000);
