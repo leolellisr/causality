@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import CommunicationInterface.SensorI;
 import coppelia.CharWA;
 import coppelia.FloatWA;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 //import outsideCommunication.OrientationVrep;
@@ -41,14 +42,56 @@ public class OutsideCommunication {
         private int nObjs = 2;
         private final boolean debug = false;
         public MotorI joint_m;
-                
-  
+        public FloatWA position0r;
+        public FloatWA orientation0r;
+        public FloatWA position0b;
+        public FloatWA position0j,position0s;
+        public FloatWA orientation0b;
+        public FloatWA orientation0j,orientation0s;
+        public IntW objR_handle;
+        public IntW objB_handle;
+        public IntW joint, sphere;
+        
 	public OutsideCommunication() {
 		vrep = new remoteApi();
                 obj_handle = new IntW[nObjs];
 
 	}
 
+        public void run(){
+            this.joint_m.setPos(50);
+        }
+        public void reset(){
+            vrep.simxSetObjectPosition(clientID, objR_handle.getValue(), -1, position0r, vrep.simx_opmode_oneshot);
+            
+            
+            vrep.simxSetObjectPosition(clientID, objB_handle.getValue(), -1, position0b, vrep.simx_opmode_oneshot);
+            
+             try {
+			Thread.sleep(50);
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+		}
+             
+             vrep.simxSetObjectPosition(clientID, joint.getValue(), -1, position0j, vrep.simx_opmode_oneshot);
+            
+              try {
+			Thread.sleep(50);
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+		}
+             vrep.simxSetObjectPosition(clientID, sphere.getValue(), -1, position0s, vrep.simx_opmode_oneshot);
+            
+            this.joint_m.setPos(0);
+            
+            
+            try {
+			Thread.sleep(1000);
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+		}
+
+        }
 	public void start() {
 		// System.out.println("Program started");
 		vrep = new remoteApi();
@@ -76,7 +119,7 @@ public class OutsideCommunication {
 		//////////////////////////////////////////////////////////////////
 		// Sensors - Position
 		//////////////////////////////////////////////////////////////////
-		IntW objR_handle;
+		
 
 		String objR_sensors_name = "red";
 		objR_handle = new IntW(-1);
@@ -87,12 +130,20 @@ public class OutsideCommunication {
 				System.out.println("Connected to sensor ");
 		
 
-		positionR = new PosVrep(vrep, clientID, objR_handle);
-                
-		IntW objB_handle;
+		this.positionR = new PosVrep(vrep, clientID, objR_handle);
+                ArrayList<FloatWA> getDataPos=this.positionR.getDataPos();
+                getDataPos=this.positionR.getDataPos();
+                getDataPos=this.positionR.getDataPos();
+                this.position0r = getDataPos.get(0);
+                this.orientation0r = getDataPos.get(1);
+                System.out.println("red pos x: "+this.position0r.getArray()[0]);
+                System.out.println("red pos y: "+this.position0r.getArray()[1]);
+                System.out.println("red pos z: "+this.position0r.getArray()[2]);
+                System.out.println("red ori: "+this.orientation0r.getArray()[0]);
+		
 
 		String objB_sensors_name = "blue";
-		objB_handle = new IntW(-1);
+		this.objB_handle = new IntW(-1);
 		vrep.simxGetObjectHandle(clientID, objB_sensors_name, objB_handle, remoteApi.simx_opmode_blocking);
 			if (objB_handle.getValue() == -1)
 				System.out.println("Error on connenting to sensor ");
@@ -100,16 +151,54 @@ public class OutsideCommunication {
 				System.out.println("Connected to sensor ");
 		
 
-		positionB = new PosVrep(vrep, clientID, objB_handle);
+		this.positionB = new PosVrep(vrep, clientID, objB_handle);
+                getDataPos=this.positionB.getDataPos();
+                getDataPos=this.positionB.getDataPos();
+                this.position0b = getDataPos.get(0);
+                this.orientation0b = getDataPos.get(1);
+                System.out.println("Blue pos x: "+this.position0b.getArray()[0]);
+                System.out.println("Blue pos y: "+this.position0b.getArray()[1]);
+                System.out.println("Blue pos z: "+this.position0b.getArray()[2]);
+                System.out.println("Blue ori: "+this.orientation0b.getArray()[0]);
                 
-                IntW joint = new IntW(-1);
+                joint = new IntW(-1);
            
+                vrep.simxGetObjectHandle(clientID, "Prismatic_joint", joint, remoteApi.simx_opmode_blocking);
+			if (joint.getValue() == -1)
+				System.out.println("Error on connenting to joint ");
+			else
+				System.out.println("Connected to joint ");
+		
+
+		PosVrep positionj = new PosVrep(vrep, clientID, joint);
+                getDataPos=positionj.getDataPos();
+                getDataPos=positionj.getDataPos();
+                getDataPos=positionj.getDataPos();
+                this.position0j = getDataPos.get(0);
+                this.orientation0j = getDataPos.get(1);
+                
+                sphere = new IntW(-1);
+           
+                vrep.simxGetObjectHandle(clientID, "Sphere", sphere, remoteApi.simx_opmode_blocking);
+			if (sphere.getValue() == -1)
+				System.out.println("Error on connenting to sphere ");
+			else
+				System.out.println("Connected to sphere ");
+		
+
+		PosVrep positions = new PosVrep(vrep, clientID, sphere);
+                getDataPos=positions.getDataPos();
+                getDataPos=positions.getDataPos();
+                getDataPos=positions.getDataPos();
+                this.position0s = getDataPos.get(0);
+                this.orientation0s = getDataPos.get(1);
+                
 		vrep.simxGetObjectHandle(clientID, "Prismatic_joint", joint, remoteApi.simx_opmode_blocking);
 	
 		
-		joint_m = new MotorVrep(vrep, clientID, joint.getValue());
+		this.joint_m = new MotorVrep(vrep, clientID, joint.getValue());
                 
-                joint_m.setPos(50);
+                this.joint_m.setPos(50);
                 
                 try {
 			Thread.sleep(1000);
@@ -123,7 +212,8 @@ public class OutsideCommunication {
 
 		
 	
-
-	
+	System.out.println("OC START - R: "+position0r+" "+orientation0r);
+        System.out.println("B: "+position0b+" "+orientation0b);
+        
 			}
 }

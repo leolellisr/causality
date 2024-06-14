@@ -16,10 +16,22 @@ import CommunicationInterface.SensorI;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.deeplearning4j.nn.api.OptimizationAlgorithm;
+import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
+import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
+import org.deeplearning4j.nn.conf.layers.DenseLayer;
+import org.deeplearning4j.nn.weights.WeightInit;
+import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.learning.config.Sgd;
 import outsideCommunication.OutsideCommunication;
-//import codelets.motor.Lock;
+import nn.LinearDataClassifier;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 
 /**
  *
@@ -30,17 +42,25 @@ public class CausalityCodelet extends Codelet {
     private MemoryObject input_redMO;
     private SensorI position;
     private int dimension;
+    
+    private static boolean debug = false;
     private String input_red, input_blue, output;
     private List input_red_idea, input_blue_idea;
     private Idea output_idea;
     private OutsideCommunication oc;
+    private LinearDataClassifier nn_r, nn_b;
     public CausalityCodelet(OutsideCommunication oc,String input_red, String input_blue, String output, int dimension){
         this.input_red = input_red;
         this.input_blue = input_blue;
         this.output = output; 
         this.dimension = 0;
         this.oc = oc;
+        
+        
+          this.nn_r = new LinearDataClassifier(1234, 0.01, 50, 30, 6, 6, 20, "red_nn");
 
+          this.nn_b = new LinearDataClassifier(1234, 0.01, 50, 30, 6, 6, 20, "blue_nn");
+          
     }
     
     @Override
@@ -61,9 +81,30 @@ public class CausalityCodelet extends Codelet {
         
     }
 
+    public void check_end_table(List<Float> mostRecentInput_red, List<Float> mostRecentInput_blue){
+        if(mostRecentInput_red.get(0)>4 || mostRecentInput_red.get(0)<-1) oc.reset();
+        if(mostRecentInput_blue.get(0)>4 || mostRecentInput_blue.get(0)<-1) oc.reset();
+        
+    }
+    
+    public float[][] convert(ArrayList<List<Float>> arrayList){
+        
+        int numRows = arrayList.size();
+        int numCols = arrayList.get(0).size();
+        float[][] floatArray = new float[numRows][numCols];
+
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numCols; j++) {
+                floatArray[i][j] = arrayList.get(i).get(j);
+            }
+        }
+        return floatArray;
+    }
+    
     @Override
     public void proc() {
         this.oc.joint_m.setPos(50);
+        this.oc.run();
     	try {
             Thread.sleep(50);
         } catch (Exception e) {
@@ -76,25 +117,89 @@ public class CausalityCodelet extends Codelet {
 
         if(input_red_idea!= null && input_blue_idea!= null && input_red_idea.get(input_red_idea.size()-1)!= null && input_blue_idea.get(input_blue_idea.size()-1)!= null){
 
-            if(!input_red_idea.isEmpty() && !input_blue_idea.isEmpty()){
-                MemoryObject red = (MemoryObject) input_red_idea.get(input_red_idea.size()-1);
+            
+            if(input_red_idea.size() > 23 && input_blue_idea.size() > 23){
+
+                ArrayList<List<Float>> labels_r = new ArrayList<>();
+                ArrayList<List<Float>> labels_b = new ArrayList<>();
+
+                ArrayList<List<Float>> inputs_r = new ArrayList<>();
+                ArrayList<List<Float>> inputs_b = new ArrayList<>();
+
+                int i=0, j=0;    
+                while(inputs_r.size()<20 || inputs_b.size()<20 || labels_r.size()<20 || labels_b.size()<20 || j<20){    
+                MemoryObject red = (MemoryObject) input_red_idea.get(input_red_idea.size()-i-1);
                 List<Float> mostRecentInput_red = (List<Float>) red.getI();
-                MemoryObject blue = (MemoryObject) input_blue_idea.get(input_blue_idea.size()-1);
+                MemoryObject blue = (MemoryObject) input_blue_idea.get(input_blue_idea.size()-i-1);
                 List<Float> mostRecentInput_blue = (List<Float>) blue.getI();
                 
+                if(debug) System.out.print(" red L = "+mostRecentInput_red+", size: "+mostRecentInput_red.size()+" \n blue L = "+mostRecentInput_blue+", size: "+mostRecentInput_blue.size());
                 
-                System.out.print(" red = "+mostRecentInput_red+" \n blue = "+mostRecentInput_blue);
+                if(mostRecentInput_red.size() > 2 && mostRecentInput_blue.size() > 2){
+                    check_end_table(mostRecentInput_red, mostRecentInput_blue);
+
+                    labels_r.add(mostRecentInput_red);
+                    labels_b.add(mostRecentInput_blue);
+
+                    MemoryObject redi = (MemoryObject) input_red_idea.get(input_red_idea.size()-i-2);
+                    List<Float> mostRecentInput_redi = (List<Float>) redi.getI();
+                    MemoryObject bluei = (MemoryObject) input_blue_idea.get(input_blue_idea.size()-i-2);
+                    List<Float> mostRecentInput_bluei = (List<Float>) bluei.getI();
+                    if(debug) System.out.print(" red i= "+i+" "+mostRecentInput_redi+" \n blue i= "+mostRecentInput_bluei);
+                    inputs_r.add(mostRecentInput_redi);
+                    inputs_b.add(mostRecentInput_bluei);
+                    j+=1;
+                    }
+                i+=1;
+                }
+                
+                if(debug) {
+                    System.out.print(" sizes. ir:"+inputs_r.size()+"ib:"+inputs_b.size());
+                    System.out.print(" sizes. lr:"+labels_r.size()+"lb:"+labels_b.size());
+                }
+                  // list off input values, 4 training samples with data for 2
+        // input-neurons each
+                
+            INDArray labels_ra = Nd4j.create(convert(labels_r));
+            INDArray input_ra = Nd4j.create(convert(inputs_r));
+
+            try {
+                    // correspondending list with expected output values, 4 training samples
+                    // with data for 2 output-neurons each
+                    this.nn_r.setData(input_ra,labels_ra);
+            } catch (IOException ex) {
+                    Logger.getLogger(CausalityCodelet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                    Logger.getLogger(CausalityCodelet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            this.nn_r.fit();
+
+            INDArray labels_ba = Nd4j.create(convert(labels_b));
+            INDArray input_ba = Nd4j.create(convert(inputs_b));
+
+            try {
+                    // correspondending list with expected output values, 4 training samples
+                    // with data for 2 output-neurons each
+                    this.nn_b.setData(input_ba,labels_ba);
+            } catch (IOException ex) {
+                    Logger.getLogger(CausalityCodelet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                    Logger.getLogger(CausalityCodelet.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
 
+        this.nn_b.fit();
             }
             
         }
         else{
             this.dimension += 1;
-            System.out.print(" causalisy else = "+this.dimension);
-            System.out.print(input_red_idea);
-            System.out.print(input_blue_idea);
-            
+                if(debug){ 
+                System.out.print(" causalisy else = "+this.dimension);
+                System.out.print(input_red_idea);
+                System.out.print(input_blue_idea);
+            }
         }
         
     }

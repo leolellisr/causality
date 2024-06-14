@@ -49,12 +49,12 @@ public class PosVrep implements SensorI{
     private final remoteApi vrep;
     private final int clientID; 
     private  int time_graph;
+    private ArrayList<FloatWA> pos_data0 = new ArrayList<>();
     private ArrayList<Float> pos_data;   
     private int stage, num_exp;    
     private final int res = 256;
     private final int max_time_graph=100;
-    private boolean debug = true;
-    
+    private boolean debug = false;
     public PosVrep(remoteApi vrep, int clientid, IntW obj_handle) {
         this.time_graph = 0;
         this.vrep = vrep;
@@ -80,6 +80,7 @@ public class PosVrep implements SensorI{
            this.num_exp = newExp;    
     }
     
+  
     @Override
     public int getStage() {
             return this.stage;    
@@ -97,6 +98,34 @@ public class PosVrep implements SensorI{
            return String.valueOf(obj_handle.getValue());
     }
 
+    public ArrayList<FloatWA> getDataPos() {
+       try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+        }
+        
+        FloatWA position = new FloatWA(3);
+	vrep.simxGetObjectPosition(clientID, obj_handle.getValue(), -1, position, vrep.simx_opmode_streaming);
+
+        FloatWA orientation = new FloatWA(3);
+	vrep.simxGetObjectOrientation(clientID, obj_handle.getValue(), -1, orientation, vrep.simx_opmode_streaming);
+                
+        if(debug) System.out.println("Object: "+obj_handle.getValue()+", x: "+position.getArray()[0]+", y: "+position.getArray()[1]+", z: "+position.getArray()[2]+", alpha: "+orientation.getArray()[0]+", betta: "+orientation.getArray()[1]+", gamma: "+orientation.getArray()[2]);
+        
+        
+ 	if (vrep.simxSynchronous(clientID, true) == remoteApi.simx_return_ok)
+            vrep.simxSynchronousTrigger(clientID);
+      
+        ArrayList<FloatWA> getDataPos = new ArrayList<>();
+        getDataPos.add(position);
+        getDataPos.add(orientation);
+        
+        //Idea position_idea = Idea.createIdea("position",pos_data,3);
+        return getDataPos;
+        
+    }
+    
     @Override
     public Object getData() {
        try {
@@ -104,7 +133,7 @@ public class PosVrep implements SensorI{
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }
-
+        
         FloatWA position = new FloatWA(3);
 	vrep.simxGetObjectPosition(clientID, obj_handle.getValue(), -1, position, vrep.simx_opmode_streaming);
 
@@ -127,7 +156,9 @@ public class PosVrep implements SensorI{
         for (int j = 0; j < 6; j++){
             pos_data.set(j, position_array.get(j));
         }
+        
         printToFile(position_array, String.valueOf(obj_handle.getValue()));
+        
         //Idea position_idea = Idea.createIdea("position",pos_data,3);
         return pos_data;
         
@@ -150,10 +181,6 @@ public class PosVrep implements SensorI{
 
     }
 
-	@Override
-	public void resetData() {
-		// TODO Auto-generated method stub
-		
-	}
+	
     
 }

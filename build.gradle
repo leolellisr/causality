@@ -49,10 +49,38 @@ dependencies {
 testImplementation group: 'junit', name: 'junit', version:versionJunit
 
 implementation 'com.github.CST-Group:cst-desktop:1.0.5'
+
+// bytedeco
+implementation group: 'org.bytedeco', name: 'javacpp', version:versionBytedeco
+
+// DL4J
+implementation group: 'org.deeplearning4j', name: 'deeplearning4j-core', version:versionDL4J 
+//implementation group: 'org.deeplearning4j', name: 'rl4j-core', version:versionDL4J
+
+implementation group: 'org.deeplearning4j', name: 'deeplearning4j-core', version:versionRL4J 
+//implementation group: 'org.deeplearning4j', name: 'rl4j-core', version:versionRL4J
+
+// lombok
+implementation group: 'org.projectlombok', name: 'lombok', version:versionLombok
+annotationProcessor group: 'org.projectlombok', name: 'lombok', version:versionLombok
+
+// ND4J
+//implementation group: 'org.nd4j', name: 'nd4j-native', version:'1.0.0-beta4'
+implementation group: 'org.nd4j', name: 'nd4j-native-platform', version:versionND4J
+
+// SLF4J
+implementation group: 'org.slf4j', name: 'slf4j-api', version:versionSLF4J
+implementation group: 'org.slf4j', name: 'slf4j-simple', version:versionSLF4J
+
+// JUNIT
+testImplementation group: 'junit', name: 'junit', version:versionJunit
+
+
 }
 
 task uberJar(type: Jar) {
     archiveClassifier = 'full'
+    setProperty("zip64", true)
     manifest {
       attributes(
         'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
@@ -65,6 +93,8 @@ task uberJar(type: Jar) {
         configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
     }
 }
+
+
 artifacts
 {
     archives uberJar

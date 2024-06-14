@@ -12,6 +12,9 @@
  
 package CommunicationInterface;
 
+import coppelia.FloatWA;
+import java.util.ArrayList;
+
 /**
  *
  * @author L. M. Berto
@@ -21,9 +24,8 @@ public interface SensorI {
     public void setExp(int exp);
     public int getExp();
     public Object getData();
-    public void resetData();
     public String getObjHandle();
     public int getStage();
-
     public void setStage(int stage);
+    public ArrayList<FloatWA> getDataPos();
 }
