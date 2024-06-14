@@ -39,7 +39,7 @@ public class CST_Causality_App {
         OutsideCommunication oc = new OutsideCommunication();
         oc.start();
         
-        AgentMind am = new AgentMind(oc, "learning", "drives");
+        AgentMind am = new AgentMind(oc, "learning", "drives", true);
         //MindViewer mv = new MindViewer(am,"mind",null);
         //mv.setVisible(true);
     }

@@ -49,17 +49,18 @@ public class CausalityCodelet extends Codelet {
     private Idea output_idea;
     private OutsideCommunication oc;
     private LinearDataClassifier nn_r, nn_b;
-    public CausalityCodelet(OutsideCommunication oc,String input_red, String input_blue, String output, int dimension){
+    public CausalityCodelet(OutsideCommunication oc,String input_red, String input_blue, String output, int dimension, boolean load) throws IOException{
         this.input_red = input_red;
         this.input_blue = input_blue;
         this.output = output; 
         this.dimension = 0;
         this.oc = oc;
+        int numRows=10;
+        int numColumns=6;
         
-        
-          this.nn_r = new LinearDataClassifier(1234, 0.01, 50, 30, 6, 6, 20, "red_nn");
+          this.nn_r = new LinearDataClassifier(1233, 0.01, 50, 10, numColumns, numColumns, 20, "red_nn",load);
 
-          this.nn_b = new LinearDataClassifier(1234, 0.01, 50, 30, 6, 6, 20, "blue_nn");
+          this.nn_b = new LinearDataClassifier(1234, 0.01, 50, 10, numColumns, numColumns, 20, "blue_nn",load);
           
     }
     
@@ -126,8 +127,8 @@ public class CausalityCodelet extends Codelet {
                 ArrayList<List<Float>> inputs_r = new ArrayList<>();
                 ArrayList<List<Float>> inputs_b = new ArrayList<>();
 
-                int i=0, j=0;    
-                while(inputs_r.size()<20 || inputs_b.size()<20 || labels_r.size()<20 || labels_b.size()<20 || j<20){    
+                int j=0;    
+                for(int i=0; i< input_red_idea.size()-2; i++){    
                 MemoryObject red = (MemoryObject) input_red_idea.get(input_red_idea.size()-i-1);
                 List<Float> mostRecentInput_red = (List<Float>) red.getI();
                 MemoryObject blue = (MemoryObject) input_blue_idea.get(input_blue_idea.size()-i-1);
@@ -167,13 +168,13 @@ public class CausalityCodelet extends Codelet {
                     // correspondending list with expected output values, 4 training samples
                     // with data for 2 output-neurons each
                     this.nn_r.setData(input_ra,labels_ra);
+                    this.nn_r.fit();
             } catch (IOException ex) {
                     Logger.getLogger(CausalityCodelet.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
                     Logger.getLogger(CausalityCodelet.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            this.nn_r.fit();
 
             INDArray labels_ba = Nd4j.create(convert(labels_b));
             INDArray input_ba = Nd4j.create(convert(inputs_b));
@@ -182,6 +183,7 @@ public class CausalityCodelet extends Codelet {
                     // correspondending list with expected output values, 4 training samples
                     // with data for 2 output-neurons each
                     this.nn_b.setData(input_ba,labels_ba);
+                    this.nn_b.fit();
             } catch (IOException ex) {
                     Logger.getLogger(CausalityCodelet.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
@@ -189,7 +191,7 @@ public class CausalityCodelet extends Codelet {
             }
 
 
-        this.nn_b.fit();
+
             }
             
         }

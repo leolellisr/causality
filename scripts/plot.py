@@ -5,8 +5,10 @@ import matplotlib.pyplot as plt
 #Plota trajetoria 
 
 i = 0
-file_r = '../profile/position20.txt'
-file_b = '../profile/position15.txt'
+file_r = '../profile/position_red.txt'
+file_b = '../profile/position_blue.txt'
+pred_r = '../profile/causal_red_nn.txt'
+pred_b = '../profile/causal_blue_nn.txt'
 debug = True 
 
 def get_data(file):
@@ -36,7 +38,12 @@ def remove_strings_from_file(file_name, strings_to_remove):
         # Open a new file for writing
         with open(file_name, 'w') as f:
             # Iterate through each line in the input file
+            
             for line in lines:
+                line = line.replace("     ", " ")
+                line = line.replace("    ", " ")
+                line = line.replace("   ", " ")
+                line = line.replace("  ", " ")
                 # Split the line by whitespace and keep only the elements from index 1 onwards
                 elements = line.split(' ')[1:]
                 # Join the elements back into a string and write to the output file
@@ -64,11 +71,20 @@ strings_to_remove = [
 
 remove_strings_from_file(file_r, strings_to_remove)
 remove_strings_from_file(file_b, strings_to_remove)
+remove_strings_from_file(pred_r, strings_to_remove)
+remove_strings_from_file(pred_b, strings_to_remove)
 
 x_r, y_r = get_data(file_r)
+print(len(x_r))
 print(f"xr: {x_r[len(x_r)-1]}, yr: {y_r[len(y_r)-1]}")
 x_b, y_b = get_data(file_b)
 print(f"xb: {x_b[len(x_b)-1]}, yb: {y_b[len(y_b)-1]}")
+
+px_r, py_r = get_data(pred_r)
+print(f"pxr: {px_r[len(px_r)-1]}, py_r: {py_r[len(py_r)-1]}")
+px_b, py_b = get_data(pred_b)
+print(f"xb: {px_b[len(px_b)-1]}, py_b: {py_b[len(py_b)-1]}")
+
 # Plot trajectory
 fig, ax = plt.subplots(figsize=(6, 6))
 
@@ -84,8 +100,8 @@ x_fim = x_r[len(x_r)-1]
 y_fim = y_r[len(y_r)-1]
 
 
-ax.scatter(x_r, y_r, c='red', label = 'red ball', s=10)
-ax.scatter(x_ini,y_ini,c='k',marker='<', s=100, zorder=3, label = 'Start red')
+ax.scatter(x_r, y_r, c='pink', label = 'red ball', s=10)
+ax.scatter(x_ini,y_ini,c='m',marker='<', s=100, zorder=3, label = 'Start red')
 ax.scatter(x_fim,y_fim,c='pink',marker='D', s=100,  zorder=3, label = 'End red')
 
 
@@ -105,6 +121,39 @@ ax.scatter(x_b, y_b, c='blue', label = 'blue ball', s=10)
 ax.scatter(x_ini,y_ini,c='darkslateblue',marker='<', s=100, zorder=3, label = 'Start blue')
 ax.scatter(x_fim,y_fim,c='indigo',marker='D', s=100,  zorder=3, label = 'End blue')
 
+# Plot trajectory
+posTupPR = []
+for xi,yi in zip(px_r,py_r):
+    posTupPR.append((xi,yi))
+posX, posY = zip(*posTupR)
+
+x_ini = px_r[0]
+y_ini = py_r[0]
+
+x_fim = px_r[len(px_r)-1]
+y_fim = py_r[len(py_r)-1]
+
+
+ax.scatter(px_r, py_r, c='red', label = 'pred red ball', s=10)
+ax.scatter(x_ini,y_ini,c='r',marker='<', s=100, zorder=3, label = 'Start pred red')
+ax.scatter(x_fim,y_fim,c='red',marker='D', s=100,  zorder=3, label = 'End pred red')
+
+# Plot trajectory
+posTupPB = []
+for xi,yi in zip(px_b,py_b):
+    posTupPB.append((xi,yi))
+posX, posY = zip(*posTupB)
+
+x_ini = px_b[0]
+y_ini = py_b[0]
+
+x_fim = px_b[len(px_b)-1]
+y_fim = py_b[len(py_b)-1]
+
+
+ax.scatter(px_b, py_b, c='cyan', label = 'pred blue ball', s=10)
+ax.scatter(x_ini,y_ini,c='c',marker='<', s=100, zorder=3, label = 'Start pred blue')
+ax.scatter(x_fim,y_fim,c='cyan',marker='D', s=100,  zorder=3, label = 'End pred blue')
 
 ax.grid(True)
 ax.legend(loc='best')

@@ -130,7 +130,7 @@ public class OutsideCommunication {
 				System.out.println("Connected to sensor ");
 		
 
-		this.positionR = new PosVrep(vrep, clientID, objR_handle);
+		this.positionR = new PosVrep(vrep, clientID, objR_handle, "red");
                 ArrayList<FloatWA> getDataPos=this.positionR.getDataPos();
                 getDataPos=this.positionR.getDataPos();
                 getDataPos=this.positionR.getDataPos();
@@ -151,7 +151,7 @@ public class OutsideCommunication {
 				System.out.println("Connected to sensor ");
 		
 
-		this.positionB = new PosVrep(vrep, clientID, objB_handle);
+		this.positionB = new PosVrep(vrep, clientID, objB_handle, "blue");
                 getDataPos=this.positionB.getDataPos();
                 getDataPos=this.positionB.getDataPos();
                 this.position0b = getDataPos.get(0);
@@ -170,7 +170,7 @@ public class OutsideCommunication {
 				System.out.println("Connected to joint ");
 		
 
-		PosVrep positionj = new PosVrep(vrep, clientID, joint);
+		PosVrep positionj = new PosVrep(vrep, clientID, joint,"joint");
                 getDataPos=positionj.getDataPos();
                 getDataPos=positionj.getDataPos();
                 getDataPos=positionj.getDataPos();
@@ -186,7 +186,7 @@ public class OutsideCommunication {
 				System.out.println("Connected to sphere ");
 		
 
-		PosVrep positions = new PosVrep(vrep, clientID, sphere);
+		PosVrep positions = new PosVrep(vrep, clientID, sphere,"sphere");
                 getDataPos=positions.getDataPos();
                 getDataPos=positions.getDataPos();
                 getDataPos=positions.getDataPos();

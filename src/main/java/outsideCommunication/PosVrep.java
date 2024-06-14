@@ -55,7 +55,8 @@ public class PosVrep implements SensorI{
     private final int res = 256;
     private final int max_time_graph=100;
     private boolean debug = false;
-    public PosVrep(remoteApi vrep, int clientid, IntW obj_handle) {
+    private String name;
+    public PosVrep(remoteApi vrep, int clientid, IntW obj_handle, String name) {
         this.time_graph = 0;
         this.vrep = vrep;
         this.stage =3;
@@ -63,7 +64,7 @@ public class PosVrep implements SensorI{
         this.obj_handle = obj_handle;
         clientID = clientid;
         pos_data = new ArrayList<Float>();
-
+        this.name = name;
         // x, y, z, alpha, beta, gamma
         for (int j = 0; j < 6; j++){
             pos_data.add(0f);
@@ -157,7 +158,7 @@ public class PosVrep implements SensorI{
             pos_data.set(j, position_array.get(j));
         }
         
-        printToFile(position_array, String.valueOf(obj_handle.getValue()));
+        printToFile(position_array, this.name);
         
         //Idea position_idea = Idea.createIdea("position",pos_data,3);
         return pos_data;
@@ -168,7 +169,7 @@ public class PosVrep implements SensorI{
         //if(this.num_exp == 1 || this.num_exp%10 == 0){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
         LocalDateTime now = LocalDateTime.now();  
-        try(FileWriter fw = new FileWriter("profile/position"+file+".txt", true);
+        try(FileWriter fw = new FileWriter("profile/position_"+file+".txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw)){
             out.println(dtf.format(now)+"_"+time_graph+" "+ object);

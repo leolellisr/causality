@@ -44,7 +44,7 @@ public class AgentMind extends Mind {
     private int index_hunger, index_curiosity;
         private String stringOutputac = "", stringOutputre = "";
 
-    public AgentMind(OutsideCommunication oc, String mode, String motivation) throws IOException{
+    public AgentMind(OutsideCommunication oc, String mode, String motivation, boolean load) throws IOException{
         
         super();
         //System.out.println("AgentMind");
@@ -96,7 +96,7 @@ public class AgentMind extends Mind {
         posB_buffer.addOutput(posB_bufferMO);
         insertCodelet(posB_buffer);
         
-        Codelet causality = new CausalityCodelet(oc, "POSR_BUFFER", "POSB_BUFFER", "CAUSALITY", Posdimension);
+        Codelet causality = new CausalityCodelet(oc, "POSR_BUFFER", "POSB_BUFFER", "CAUSALITY", Posdimension, load);
         causality.addInput(posR_bufferMO);
         causality.addInput(posB_bufferMO);
         causality.addOutput(causalityMO);
