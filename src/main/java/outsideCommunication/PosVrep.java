@@ -66,7 +66,7 @@ public class PosVrep implements SensorI{
         pos_data = new ArrayList<Float>();
         this.name = name;
         // x, y, z, alpha, beta, gamma
-        for (int j = 0; j < 6; j++){
+        for (int j = 0; j < 10; j++){
             pos_data.add(0f);
         }
     }
@@ -140,7 +140,10 @@ public class PosVrep implements SensorI{
 
         FloatWA orientation = new FloatWA(3);
 	vrep.simxGetObjectOrientation(clientID, obj_handle.getValue(), -1, orientation, vrep.simx_opmode_streaming);
-                
+        
+        FloatWA quaternion = new FloatWA(4);
+	vrep.simxGetObjectQuaternion(clientID, obj_handle.getValue(), -1, quaternion, vrep.simx_opmode_streaming);
+                   
         if(debug) System.out.println("Object: "+obj_handle.getValue()+", x: "+position.getArray()[0]+", y: "+position.getArray()[1]+", z: "+position.getArray()[2]+", alpha: "+orientation.getArray()[0]+", betta: "+orientation.getArray()[1]+", gamma: "+orientation.getArray()[2]);
         
         
@@ -153,8 +156,12 @@ public class PosVrep implements SensorI{
         position_array.add(orientation.getArray()[0]);
         position_array.add(orientation.getArray()[1]);
         position_array.add(orientation.getArray()[2]);
+        position_array.add(quaternion.getArray()[0]);
+        position_array.add(quaternion.getArray()[1]);
+        position_array.add(quaternion.getArray()[2]);
+        position_array.add(quaternion.getArray()[3]);
         
-        for (int j = 0; j < 6; j++){
+        for (int j = 0; j < 10; j++){
             pos_data.set(j, position_array.get(j));
         }
         
@@ -172,7 +179,7 @@ public class PosVrep implements SensorI{
         try(FileWriter fw = new FileWriter("profile/position_"+file+".txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw)){
-            out.println(dtf.format(now)+"_"+time_graph+" "+ object);
+            out.println(dtf.format(now)+"_"+num_exp+"_"+time_graph+" "+ object);
                 //if(time_graph == max_time_graph-1) System.out.println(dtf.format(now)+"vision: "+time_graph);
             time_graph++;
             out.close();

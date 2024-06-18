@@ -51,7 +51,7 @@ public class OutsideCommunication {
         public IntW objR_handle;
         public IntW objB_handle;
         public IntW joint, sphere;
-        
+        public int port = 25000;
 	public OutsideCommunication() {
 		vrep = new remoteApi();
                 obj_handle = new IntW[nObjs];
@@ -62,10 +62,11 @@ public class OutsideCommunication {
             this.joint_m.setPos(50);
         }
         public void reset(){
-            vrep.simxSetObjectPosition(clientID, objR_handle.getValue(), -1, position0r, vrep.simx_opmode_oneshot);
-            
+            /*vrep.simxSetObjectPosition(clientID, objR_handle.getValue(), -1, position0r, vrep.simx_opmode_oneshot);
+            positionR.setExp(1);
             
             vrep.simxSetObjectPosition(clientID, objB_handle.getValue(), -1, position0b, vrep.simx_opmode_oneshot);
+            positionB.setExp(1);
             
              try {
 			Thread.sleep(50);
@@ -90,6 +91,54 @@ public class OutsideCommunication {
 		} catch (Exception e) {
 			Thread.currentThread().interrupt();
 		}
+*/
+                // Stop the simulation clientID) .simxStopSimulation(clientID,
+        int stopSimResult = vrep.simxPauseSimulation(clientID,  vrep.simx_opmode_blocking);
+        if (stopSimResult != remoteApi.simx_return_ok) {
+            System.err.println("Failed to pause simulation. Error code: " + stopSimResult);
+            System.exit(1);
+        }
+        
+        // Temporarily switch to asynchronous mode to load the scene
+ /*       if (vrep.simxSynchronous(clientID, false) != remoteApi.simx_return_ok) {
+            System.err.println("Failed to switch to asynchronous mode.");
+            System.exit(1);
+        }
+*/
+          try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+          
+
+                
+            int loadSceneResult = vrep.simxLoadScene(clientID, "scenes/causal_scene.ttt", 0xFF, vrep.simx_opmode_oneshot);
+
+        if (loadSceneResult == remoteApi.simx_return_ok) {
+            System.out.println("Scene reset successfully.");
+        } else {
+            System.err.println("Failed to reset scene. Error code: " + loadSceneResult);
+        }
+        
+
+
+        
+          // Wait before starting the simulation again
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+
+                // Start the simulation again in synchronous mode
+        int startSimResult = vrep.simxStartSimulation(clientID, vrep.simx_opmode_blocking);
+        if (startSimResult != remoteApi.simx_return_ok) {
+            System.err.println("Failed to start simulation. Error code: " + startSimResult);
+            System.exit(1);
+        }
+        
 
         }
 	public void start() {

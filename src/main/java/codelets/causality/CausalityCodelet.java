@@ -21,13 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.deeplearning4j.nn.api.OptimizationAlgorithm;
-import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
-import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
-import org.deeplearning4j.nn.conf.layers.DenseLayer;
-import org.deeplearning4j.nn.weights.WeightInit;
-import org.nd4j.linalg.activations.Activation;
-import org.nd4j.linalg.learning.config.Sgd;
 import outsideCommunication.OutsideCommunication;
 import nn.LinearDataClassifier;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -56,11 +49,11 @@ public class CausalityCodelet extends Codelet {
         this.dimension = 0;
         this.oc = oc;
         int numRows=10;
-        int numColumns=6;
+        int numColumns=10;
         
-          this.nn_r = new LinearDataClassifier(1233, 0.01, 50, 10, numColumns, numColumns, 20, "red_nn",load);
+          this.nn_r = new LinearDataClassifier(1233, 0.01, 5, 10, numColumns, numColumns, 20, "red_nn",load);
 
-          this.nn_b = new LinearDataClassifier(1234, 0.01, 50, 10, numColumns, numColumns, 20, "blue_nn",load);
+          this.nn_b = new LinearDataClassifier(1234, 0.01, 5, 10, numColumns, numColumns, 20, "blue_nn",load);
           
     }
     
@@ -119,7 +112,7 @@ public class CausalityCodelet extends Codelet {
         if(input_red_idea!= null && input_blue_idea!= null && input_red_idea.get(input_red_idea.size()-1)!= null && input_blue_idea.get(input_blue_idea.size()-1)!= null){
 
             
-            if(input_red_idea.size() > 23 && input_blue_idea.size() > 23){
+            if(input_red_idea.size() > 13 && input_blue_idea.size() > 13){
 
                 ArrayList<List<Float>> labels_r = new ArrayList<>();
                 ArrayList<List<Float>> labels_b = new ArrayList<>();

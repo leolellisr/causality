@@ -37,7 +37,7 @@ import java.util.Map;
 public class AgentMind extends Mind {
     public static final int Resolution = 256;
     public static final int Buffersize = 100;
-    public static final int Posdimension = 6;
+    public static final int Posdimension = 10;
     public static final int Vision_image_dimension = Resolution*Resolution;
     public static final int Sensor_dimension = 256;
     public static final boolean debug = true;

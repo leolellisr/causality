@@ -125,7 +125,7 @@ public class LinearDataClassifier {
 
     final List<DataSet> list = allData.asList();
 
-    ListDataSetIterator iterator = new ListDataSetIterator(list, 10);
+    ListDataSetIterator iterator = new ListDataSetIterator(list, this.batchSize);
 
         
         if(debug){
