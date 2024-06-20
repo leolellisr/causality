@@ -51,11 +51,11 @@ public class OutsideCommunication {
         public IntW objR_handle;
         public IntW objB_handle;
         public IntW joint, sphere;
-        public int port = 25000;
+        public int port = 25000, try_i = 2;
 	public OutsideCommunication() {
 		vrep = new remoteApi();
                 obj_handle = new IntW[nObjs];
-
+                
 	}
 
         public void run(){
@@ -93,14 +93,17 @@ public class OutsideCommunication {
 		} catch (Exception e) {
 			Thread.currentThread().interrupt();
 		}
+            
 */
                 // Stop the simulation clientID) .simxStopSimulation(clientID,
-       /* int pauseSimResult = vrep.simxPauseCommunication(clientID, true);
+        
+        if(this.try_i==1){        
+                int pauseSimResult = vrep.simxPauseCommunication(clientID, true);
         if (pauseSimResult != remoteApi.simx_return_ok) {
             System.err.println("Failed to pause simulation. Error code: " + pauseSimResult);
             System.exit(1);
-        }*/
-        
+        }
+        }
        /* int stopSimResult = vrep.simxStopSimulation(clientID,  vrep.simx_opmode_oneshot);
         if (stopSimResult != remoteApi.simx_return_ok) {
             System.err.println("Failed to stop simulation. Error code: " + stopSimResult);
@@ -108,7 +111,7 @@ public class OutsideCommunication {
         }
         */
         // Temporarily switch to asynchronous mode to load the scene
-      if (vrep.simxSynchronous(clientID, false) != remoteApi.simx_return_ok) {
+    /*  if (vrep.simxSynchronous(clientID, false) != remoteApi.simx_return_ok) {
             System.err.println("Failed to switch to asynchronous mode.");
             System.exit(1);
         }
@@ -117,7 +120,7 @@ public class OutsideCommunication {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-          
+          */
 
                 
         /*    int loadSceneResult = vrep.simxLoadScene(clientID, "scenes/causal_scene.ttt", 0xFF, vrep.simx_opmode_oneshot);
@@ -148,8 +151,8 @@ public class OutsideCommunication {
         boolean simulationStopped = false;
         int maxRetries = 5;
         for (int i = 0; i < maxRetries; i++) {
-            int stopSimResult = vrep.simxStopSimulation(clientID, remoteApi.simx_opmode_blocking);
-            if (stopSimResult == remoteApi.simx_return_ok) {
+            int stopSimResult = vrep.simxStopSimulation(clientID, remoteApi.simx_opmode_oneshot);
+            if (stopSimResult == remoteApi.simx_return_ok || stopSimResult == remoteApi.simx_return_novalue_flag) {
                 simulationStopped = true;
                 break;
             } else {
@@ -188,21 +191,65 @@ public class OutsideCommunication {
             
             }
 */        // Return to synchronous mode 
-        if (vrep.simxSynchronous(clientID, true) != remoteApi.simx_return_ok) {
-            System.err.println("Failed to switch to synchronous mode.");
-            System.exit(1);
-        }
 
-                // Start the simulation again in synchronous mode
-        int startSimResult = vrep.simxStartSimulation(clientID, vrep.simx_opmode_oneshot);
-        if (startSimResult != remoteApi.simx_return_ok) {
-            System.err.println("Failed to start simulation. Error code: " + startSimResult);
-            System.exit(1);
-        }
+
         
 
+
+// Retry mechanism for Start the simulation again in synchronous mode
+         boolean simulationStart = false;
+
+        for (int i = 0; i < maxRetries; i++) {
+            
+        int startSimResult = vrep.simxStartSimulation(clientID, vrep.simx_opmode_oneshot);
+        if (startSimResult == remoteApi.simx_return_ok) {
+            System.err.println("Started simulation. code: " + startSimResult);
+            simulationStart = true;
+                break;
+            } else {
+                System.out.println("Failed to start simulation. Attempt " + (i + 1) + " Error code: " + startSimResult);
+                try {
+                    Thread.sleep(500); // Wait before retrying
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+              }
+        }
+        
+        
+          if (!simulationStart) {
+            System.out.println("Failed to start simulation after " + maxRetries + " attempts.");
+            return;
+            }
+          
+          
+          // Retry mechanism for  switch  the simulation to synchronous mode
+        boolean simulationSync = false;
+        for (int i = 0; i < maxRetries; i++) {
+            int syncSimResult = vrep.simxSynchronous(clientID, true);
+        
+        if ( syncSimResult== remoteApi.simx_return_ok) {
+            System.err.println("Switched to synchronous mode.");
+            simulationSync = true;
+            break;
+            } else {
+                System.out.println("Failed to Switch to synchronous mode. Attempt " + (i + 1) + " Error code: " + syncSimResult);
+                try {
+                    Thread.sleep(500); // Wait before retrying
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+              }
+        }
+        if (!simulationSync) {
+            System.out.println("Failed to Switch to synchronous mode after " + maxRetries + " attempts.");
+            return;
+            }
+        
+ }
+
     
-}
+
 	public void start() {
 		// System.out.println("Program started");
 		vrep = new remoteApi();
