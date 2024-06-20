@@ -187,7 +187,7 @@ public class OutsideCommunication {
             }
             
             }
-*/        // Temporarily switch to asynchronous mode to load the scene
+*/        // Return to synchronous mode 
         if (vrep.simxSynchronous(clientID, true) != remoteApi.simx_return_ok) {
             System.err.println("Failed to switch to synchronous mode.");
             System.exit(1);
