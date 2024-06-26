@@ -98,7 +98,7 @@ public class CausalityCodelet extends Codelet {
     @Override
     public void proc() {
         this.oc.joint_m.setPos(50);
-        this.oc.run();
+        //this.oc.run();
     	try {
             Thread.sleep(50);
         } catch (Exception e) {

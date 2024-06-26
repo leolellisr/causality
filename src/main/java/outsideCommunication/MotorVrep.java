@@ -47,7 +47,7 @@ public class MotorVrep implements MotorI {
         //vrep.simxPauseCommunication(clientID, true);
         //float targetVelocity = 50;
         int ret = vrep.simxSetJointTargetVelocity(clientID,motor_handle,targetVelocity, remoteApi.simx_opmode_oneshot);
-
+        System.out.println("motor setPos velocidade 50");
         if( ret == remoteApi.simx_error_noerror) {
     	   
             if(debug) System.out.println(motor_handle+" new_pos 0: "+position);
@@ -99,7 +99,7 @@ public class MotorVrep implements MotorI {
            System.out.println(motor_handle+" erro: "+ret);
            FloatW pos = new FloatW(-1);
            ret = vrep.simxSetJointTargetPosition(clientID, motor_handle, position, remoteApi.simx_opmode_oneshot);
-        
+           System.out.println("motor setPos posição 50");
            if( ret == remoteApi.simx_error_noerror) {
            //vrep.simxPauseCommunication(clientID,false);
            //vrep.simxSynchronousTrigger(clientID);

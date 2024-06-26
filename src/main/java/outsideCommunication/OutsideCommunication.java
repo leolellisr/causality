@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import CommunicationInterface.SensorI;
 import coppelia.CharWA;
+import coppelia.FloatW;
 import coppelia.FloatWA;
 import java.util.Arrays;
 import java.util.Collections;
@@ -64,7 +65,7 @@ public class OutsideCommunication {
         public void reset(){
             
             boolean not_stopped = true;
-            /*vrep.simxSetObjectPosition(clientID, objR_handle.getValue(), -1, position0r, vrep.simx_opmode_oneshot);
+            vrep.simxSetObjectPosition(clientID, objR_handle.getValue(), -1, position0r, vrep.simx_opmode_oneshot);
             positionR.setExp(1);
             
             vrep.simxSetObjectPosition(clientID, objB_handle.getValue(), -1, position0b, vrep.simx_opmode_oneshot);
@@ -76,16 +77,23 @@ public class OutsideCommunication {
 			Thread.currentThread().interrupt();
 		}
              
-             vrep.simxSetObjectPosition(clientID, joint.getValue(), -1, position0j, vrep.simx_opmode_oneshot);
-            
-              try {
+             int ret = vrep.simxSetJointTargetVelocity(clientID,joint.getValue(),-50, remoteApi.simx_opmode_oneshot_wait);
+             System.out.println("OC reset zerei velocidade");
+            // vrep.simxSetJointTargetPosition(clientID, joint.getValue(), 0, vrep.simx_opmode_oneshot_wait);
+            //System.out.println("OC reset zerei posição");
+            /*FloatW position = null;
+            vrep.simxGetJointPosition(clientID, joint.getValue(), position, vrep.simx_opmode_oneshot_wait);
+
+            System.out.println("OC reset zerei posição: "+position); 
+*/            
+            try {
 			Thread.sleep(50);
 		} catch (Exception e) {
 			Thread.currentThread().interrupt();
 		}
-             vrep.simxSetObjectPosition(clientID, sphere.getValue(), -1, position0s, vrep.simx_opmode_oneshot);
+             //vrep.simxSetObjectPosition(clientID, sphere.getValue(), -1, position0s, vrep.simx_opmode_oneshot);
             
-            this.joint_m.setPos(0);
+            /*this.joint_m.setPos(0);
             
             
             try {
@@ -97,7 +105,7 @@ public class OutsideCommunication {
 */
                 // Stop the simulation clientID) .simxStopSimulation(clientID,
         
-        if(this.try_i==1){        
+/*        if(this.try_i==1){        
                 int pauseSimResult = vrep.simxPauseCommunication(clientID, true);
         if (pauseSimResult != remoteApi.simx_return_ok) {
             System.err.println("Failed to pause simulation. Error code: " + pauseSimResult);
@@ -148,7 +156,7 @@ public class OutsideCommunication {
         System.out.println("Simulation is not running. No need to stop it.");
     } else {
      */   // Retry mechanism for stopping the simulation
-        boolean simulationStopped = false;
+/*        boolean simulationStopped = false;
         int maxRetries = 5;
         for (int i = 0; i < maxRetries; i++) {
             int stopSimResult = vrep.simxStopSimulation(clientID, remoteApi.simx_opmode_oneshot);
@@ -197,7 +205,7 @@ public class OutsideCommunication {
 
 
 // Retry mechanism for Start the simulation again in synchronous mode
-         boolean simulationStart = false;
+  /*       boolean simulationStart = false;
 
         for (int i = 0; i < maxRetries; i++) {
             
@@ -245,7 +253,7 @@ public class OutsideCommunication {
             System.out.println("Failed to Switch to synchronous mode after " + maxRetries + " attempts.");
             return;
             }
-        
+    */    
  }
 
     
@@ -254,8 +262,8 @@ public class OutsideCommunication {
 		// System.out.println("Program started");
 		vrep = new remoteApi();
 		vrep.simxFinish(-1); // just in case, close all opened connections
-                
-		clientID = vrep.simxStart("127.0.0.1", 25000, true, true, 5000, 5);
+                //
+		clientID = vrep.simxStart("127.0.0.1", 19997, true, true, 5000, 5);
 
 		if (clientID == -1) {
 			System.err.println("Connection failed");
@@ -269,9 +277,9 @@ public class OutsideCommunication {
 		}
 
 		// SYNC
-		if (vrep.simxSynchronous(clientID, true) == remoteApi.simx_return_ok)
+		/*if (vrep.simxSynchronous(clientID, true) == remoteApi.simx_return_ok)
 			vrep.simxSynchronousTrigger(clientID);
-
+*/
 		
 
 		//////////////////////////////////////////////////////////////////
@@ -356,7 +364,7 @@ public class OutsideCommunication {
 		
 		this.joint_m = new MotorVrep(vrep, clientID, joint.getValue());
                 
-                this.joint_m.setPos(50);
+                //this.joint_m.setPos(50);
                 
                 try {
 			Thread.sleep(1000);

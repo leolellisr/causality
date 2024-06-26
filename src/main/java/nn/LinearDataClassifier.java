@@ -146,7 +146,7 @@ public class LinearDataClassifier {
    public void fit() throws IOException{
         this.model.fit(this.trainIter);
 
-        System.out.println("Evaluate model "+this.name);
+        //System.out.println("Evaluate model "+this.name);
         RegressionEvaluation eval = new RegressionEvaluation();
         for (var t : testIter) {
            
@@ -160,9 +160,9 @@ public class LinearDataClassifier {
         //Evaluation evalResults = model.evaluate(testIter);
 
         //Print the evaluation statistics
-       System.out.println(eval.stats());
+       /*System.out.println(eval.stats());
        
-        System.out.println("Saving model to tmp folder: "+"profile/causal_"+this.name);
+        System.out.println("Saving model to tmp folder: "+"profile/causal_"+this.name);*/
         model.save(new File("profile/causal_"+this.name), true);
 
        System.out.println("\n****************Example finished********************");

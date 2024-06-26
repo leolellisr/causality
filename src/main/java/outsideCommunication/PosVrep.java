@@ -69,6 +69,16 @@ public class PosVrep implements SensorI{
         for (int j = 0; j < 10; j++){
             pos_data.add(0f);
         }
+        
+        
+        FloatWA position = new FloatWA(3);
+	vrep.simxGetObjectPosition(clientID, obj_handle.getValue(), -1, position, vrep.simx_opmode_streaming);
+
+        FloatWA orientation = new FloatWA(3);
+	vrep.simxGetObjectOrientation(clientID, obj_handle.getValue(), -1, orientation, vrep.simx_opmode_streaming);
+        
+        FloatWA quaternion = new FloatWA(4);
+	vrep.simxGetObjectQuaternion(clientID, obj_handle.getValue(), -1, quaternion, vrep.simx_opmode_streaming);
     }
     
     @Override
@@ -107,17 +117,17 @@ public class PosVrep implements SensorI{
         }
         
         FloatWA position = new FloatWA(3);
-	vrep.simxGetObjectPosition(clientID, obj_handle.getValue(), -1, position, vrep.simx_opmode_streaming);
+	vrep.simxGetObjectPosition(clientID, obj_handle.getValue(), -1, position, vrep.simx_opmode_buffer);
 
         FloatWA orientation = new FloatWA(3);
-	vrep.simxGetObjectOrientation(clientID, obj_handle.getValue(), -1, orientation, vrep.simx_opmode_streaming);
+	vrep.simxGetObjectOrientation(clientID, obj_handle.getValue(), -1, orientation, vrep.simx_opmode_buffer);
                 
         if(debug) System.out.println("Object: "+obj_handle.getValue()+", x: "+position.getArray()[0]+", y: "+position.getArray()[1]+", z: "+position.getArray()[2]+", alpha: "+orientation.getArray()[0]+", betta: "+orientation.getArray()[1]+", gamma: "+orientation.getArray()[2]);
         
         
- 	if (vrep.simxSynchronous(clientID, true) == remoteApi.simx_return_ok)
+ 	/*if (vrep.simxSynchronous(clientID, true) == remoteApi.simx_return_ok)
             vrep.simxSynchronousTrigger(clientID);
-      
+      */
         ArrayList<FloatWA> getDataPos = new ArrayList<>();
         getDataPos.add(position);
         getDataPos.add(orientation);
@@ -136,19 +146,19 @@ public class PosVrep implements SensorI{
         }
         
         FloatWA position = new FloatWA(3);
-	vrep.simxGetObjectPosition(clientID, obj_handle.getValue(), -1, position, vrep.simx_opmode_streaming);
+	vrep.simxGetObjectPosition(clientID, obj_handle.getValue(), -1, position, vrep.simx_opmode_buffer);
 
         FloatWA orientation = new FloatWA(3);
-	vrep.simxGetObjectOrientation(clientID, obj_handle.getValue(), -1, orientation, vrep.simx_opmode_streaming);
+	vrep.simxGetObjectOrientation(clientID, obj_handle.getValue(), -1, orientation, vrep.simx_opmode_buffer);
         
         FloatWA quaternion = new FloatWA(4);
-	vrep.simxGetObjectQuaternion(clientID, obj_handle.getValue(), -1, quaternion, vrep.simx_opmode_streaming);
+	vrep.simxGetObjectQuaternion(clientID, obj_handle.getValue(), -1, quaternion, vrep.simx_opmode_buffer);
                    
         if(debug) System.out.println("Object: "+obj_handle.getValue()+", x: "+position.getArray()[0]+", y: "+position.getArray()[1]+", z: "+position.getArray()[2]+", alpha: "+orientation.getArray()[0]+", betta: "+orientation.getArray()[1]+", gamma: "+orientation.getArray()[2]);
         
         
- 	if (vrep.simxSynchronous(clientID, true) == remoteApi.simx_return_ok)
-            vrep.simxSynchronousTrigger(clientID);
+ /*	if (vrep.simxSynchronous(clientID, true) == remoteApi.simx_return_ok)
+            vrep.simxSynchronousTrigger(clientID);*/
         ArrayList<Float> position_array = new ArrayList<Float>();
         position_array.add(position.getArray()[0]);
         position_array.add(position.getArray()[1]);
