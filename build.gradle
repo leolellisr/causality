@@ -57,7 +57,7 @@ implementation group: 'org.bytedeco', name: 'javacpp', version:versionBytedeco
 implementation group: 'org.deeplearning4j', name: 'deeplearning4j-core', version:versionDL4J 
 //implementation group: 'org.deeplearning4j', name: 'rl4j-core', version:versionDL4J
 
-implementation group: 'org.deeplearning4j', name: 'deeplearning4j-core', version:versionRL4J 
+//implementation group: 'org.deeplearning4j', name: 'deeplearning4j-core', version:versionRL4J 
 //implementation group: 'org.deeplearning4j', name: 'rl4j-core', version:versionRL4J
 
 // lombok

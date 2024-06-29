@@ -56,7 +56,8 @@ public class PosVrep implements SensorI{
     private final int max_time_graph=100;
     private boolean debug = false;
     private String name;
-    public PosVrep(remoteApi vrep, int clientid, IntW obj_handle, String name) {
+    private  OutsideCommunication oc;
+    public PosVrep(OutsideCommunication oc,remoteApi vrep, int clientid, IntW obj_handle, String name) {
         this.time_graph = 0;
         this.vrep = vrep;
         this.stage =3;
@@ -70,7 +71,7 @@ public class PosVrep implements SensorI{
             pos_data.add(0f);
         }
         
-        
+        this.oc = oc;
         FloatWA position = new FloatWA(3);
 	vrep.simxGetObjectPosition(clientID, obj_handle.getValue(), -1, position, vrep.simx_opmode_streaming);
 
@@ -111,7 +112,7 @@ public class PosVrep implements SensorI{
 
     public ArrayList<FloatWA> getDataPos() {
        try {
-            Thread.sleep(1000);
+            Thread.sleep(10);
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }
@@ -137,29 +138,56 @@ public class PosVrep implements SensorI{
         
     }
     
-    @Override
-    public Object getData() {
-       try {
-            Thread.sleep(1000);
+    public boolean check_end_table(List<Float> mostRecentInput){
+        if(mostRecentInput.get(0)>13 || mostRecentInput.get(0)<-13 || mostRecentInput.get(1)>13 || mostRecentInput.get(1)<-13){
+             System.out.print(" posVrep. check_end_table. mostRecentInput.get(0): "+
+                     mostRecentInput.get(0)+"\nmostRecentInput.get(1): "+
+                     mostRecentInput.get(1));
+            try {
+            Thread.sleep(50);
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }
+            oc.reset();
+            
+            try {
+            Thread.sleep(50);
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+        }
+            return false;
+        }
         
+        return true;
+    }
+    
+    @Override
+    public Object getData() {
+       try {
+            Thread.sleep(10);
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+        }
+        boolean checktable = false;
+        ArrayList<Float> position_array = new ArrayList<Float>();
+        int op_mode = vrep.simx_opmode_buffer;
+        
+       while(!checktable){
         FloatWA position = new FloatWA(3);
-	vrep.simxGetObjectPosition(clientID, obj_handle.getValue(), -1, position, vrep.simx_opmode_buffer);
+	vrep.simxGetObjectPosition(clientID, obj_handle.getValue(), -1, position, op_mode);
 
         FloatWA orientation = new FloatWA(3);
-	vrep.simxGetObjectOrientation(clientID, obj_handle.getValue(), -1, orientation, vrep.simx_opmode_buffer);
+	vrep.simxGetObjectOrientation(clientID, obj_handle.getValue(), -1, orientation, op_mode);
         
         FloatWA quaternion = new FloatWA(4);
-	vrep.simxGetObjectQuaternion(clientID, obj_handle.getValue(), -1, quaternion, vrep.simx_opmode_buffer);
+	vrep.simxGetObjectQuaternion(clientID, obj_handle.getValue(), -1, quaternion, op_mode);
                    
         if(debug) System.out.println("Object: "+obj_handle.getValue()+", x: "+position.getArray()[0]+", y: "+position.getArray()[1]+", z: "+position.getArray()[2]+", alpha: "+orientation.getArray()[0]+", betta: "+orientation.getArray()[1]+", gamma: "+orientation.getArray()[2]);
         
         
  /*	if (vrep.simxSynchronous(clientID, true) == remoteApi.simx_return_ok)
             vrep.simxSynchronousTrigger(clientID);*/
-        ArrayList<Float> position_array = new ArrayList<Float>();
+        
         position_array.add(position.getArray()[0]);
         position_array.add(position.getArray()[1]);
         position_array.add(position.getArray()[2]);
@@ -174,7 +202,10 @@ public class PosVrep implements SensorI{
         for (int j = 0; j < 10; j++){
             pos_data.set(j, position_array.get(j));
         }
-        
+        checktable = check_end_table(position_array);
+        if(!checktable) op_mode = vrep.simx_opmode_oneshot_wait;        
+                    
+       }
         printToFile(position_array, this.name);
         
         //Idea position_idea = Idea.createIdea("position",pos_data,3);

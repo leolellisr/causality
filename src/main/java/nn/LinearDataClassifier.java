@@ -84,6 +84,7 @@ public class LinearDataClassifier {
     private DataSet trainIter, testIter;
     private boolean debug = false;
     private int time_graph;
+    private double best_eval = 1;
     public LinearDataClassifier(int seed, double learningRate, int batchSize, int nEpochs, 
             int numInputs, int numOutputs, int numHiddenNodes, String name, boolean load) throws IOException{
         time_graph = 0;
@@ -145,7 +146,7 @@ public class LinearDataClassifier {
   
    public void fit() throws IOException{
         this.model.fit(this.trainIter);
-
+        
         //System.out.println("Evaluate model "+this.name);
         RegressionEvaluation eval = new RegressionEvaluation();
         for (var t : testIter) {
@@ -158,13 +159,15 @@ public class LinearDataClassifier {
         }
         //An alternate way to do the above loop
         //Evaluation evalResults = model.evaluate(testIter);
-
+        if(eval.averageMeanSquaredError() < best_eval){
+            System.out.println("Eval "+eval.averageMeanSquaredError()+" better than best eval "+best_eval+". Saving model to tmp folder: "+"profile/causal_"+this.name);
+            model.save(new File("profile/causal_"+this.name), true);
+            best_eval = eval.averageMeanSquaredError();
+        
+        }
         //Print the evaluation statistics
-       /*System.out.println(eval.stats());
+       System.out.println(eval.stats());
        
-        System.out.println("Saving model to tmp folder: "+"profile/causal_"+this.name);*/
-        model.save(new File("profile/causal_"+this.name), true);
-
        System.out.println("\n****************Example finished********************");
        
        

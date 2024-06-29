@@ -47,59 +47,21 @@ public class MotorVrep implements MotorI {
         //vrep.simxPauseCommunication(clientID, true);
         //float targetVelocity = 50;
         int ret = vrep.simxSetJointTargetVelocity(clientID,motor_handle,targetVelocity, remoteApi.simx_opmode_oneshot);
-        System.out.println("motor setPos velocidade 50");
+        if(debug) System.out.println("motor setPos velocidade 50");
         if( ret == remoteApi.simx_error_noerror) {
     	   
             if(debug) System.out.println(motor_handle+" new_pos 0: "+position);
             //vrep.simxPauseCommunication(clientID,false);
             //vrep.simxSynchronousTrigger(clientID);
            return 0;
-       } 
+        } 
        
-        /*int ret1 = vrep.simxSetJointTargetPosition(clientID, motor_handle, speed, remoteApi.simx_opmode_buffer);
-        if( ret1 == remoteApi.simx_error_noerror) {
-    	   
-            System.out.println(motor_handle+" new_pos 1:"+speed);
-            vrep.simxPauseCommunication(clientID,false);
-           return 0;
-       } else System.out.println(motor_handle+" ret 1:"+ret1);
-       
-        int ret2 = vrep.simxSetJointTargetPosition(clientID, motor_handle, speed, remoteApi.simx_opmode_streaming);
-        if(ret2 == remoteApi.simx_error_noerror){
-    	   
-            System.out.println(motor_handle+" new_pos 2:"+speed);
-            vrep.simxPauseCommunication(clientID,false);
-           return 0;
-       } else System.out.println(motor_handle+" ret 2:"+ret2);
-       
-        int ret3 = vrep.simxSetJointPosition(clientID, motor_handle, speed, remoteApi.simx_opmode_oneshot);
-        if(ret3 == remoteApi.simx_error_noerror){
-    	   
-            System.out.println(motor_handle+" new_pos 3:"+speed);
-            vrep.simxPauseCommunication(clientID,false);
-           return 0;
-       } else System.out.println(motor_handle+" ret 3:"+ret3);
-        
-        int ret4 = vrep.simxSetJointPosition(clientID, motor_handle, speed, remoteApi.simx_opmode_buffer);
-        if(ret4 == remoteApi.simx_error_noerror){
-    	   
-            System.out.println(motor_handle+" new_pos 4:"+speed);
-            vrep.simxPauseCommunication(clientID,false);
-           return 0;
-       } else System.out.println(motor_handle+" ret 4:"+ret4);
-        
-       int ret5 = vrep.simxSetJointPosition(clientID, motor_handle, speed, remoteApi.simx_opmode_streaming);
-       if(ret5 == remoteApi.simx_error_noerror) {
-    	   
-            System.out.println(motor_handle+" new_pos 5:"+speed);
-            vrep.simxPauseCommunication(clientID,false);
-           return 0;
-       }*/ else {
+        else {
            //System.out.println(motor_handle+" ret 5:"+ret5);
            System.out.println(motor_handle+" erro: "+ret);
            FloatW pos = new FloatW(-1);
            ret = vrep.simxSetJointTargetPosition(clientID, motor_handle, position, remoteApi.simx_opmode_oneshot);
-           System.out.println("motor setPos posição 50");
+           if(debug) System.out.println("motor setPos posição 50");
            if( ret == remoteApi.simx_error_noerror) {
            //vrep.simxPauseCommunication(clientID,false);
            //vrep.simxSynchronousTrigger(clientID);

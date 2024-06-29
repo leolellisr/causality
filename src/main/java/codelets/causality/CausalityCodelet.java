@@ -35,13 +35,14 @@ public class CausalityCodelet extends Codelet {
     private MemoryObject input_redMO;
     private SensorI position;
     private int dimension;
-    
+    private  boolean reset = true;
     private static boolean debug = false;
     private String input_red, input_blue, output;
     private List input_red_idea, input_blue_idea;
     private Idea output_idea;
     private OutsideCommunication oc;
     private LinearDataClassifier nn_r, nn_b;
+
     public CausalityCodelet(OutsideCommunication oc,String input_red, String input_blue, String output, int dimension, boolean load) throws IOException{
         this.input_red = input_red;
         this.input_blue = input_blue;
@@ -75,11 +76,7 @@ public class CausalityCodelet extends Codelet {
         
     }
 
-    public void check_end_table(List<Float> mostRecentInput_red, List<Float> mostRecentInput_blue){
-        if(mostRecentInput_red.get(0)>4 || mostRecentInput_red.get(0)<-1) oc.reset();
-        if(mostRecentInput_blue.get(0)>4 || mostRecentInput_blue.get(0)<-1) oc.reset();
-        
-    }
+    
     
     public float[][] convert(ArrayList<List<Float>> arrayList){
         
@@ -97,7 +94,7 @@ public class CausalityCodelet extends Codelet {
     
     @Override
     public void proc() {
-        this.oc.joint_m.setPos(50);
+        this.oc.joint_m.setPos(oc.velocity);
         //this.oc.run();
     	try {
             Thread.sleep(50);
@@ -130,11 +127,10 @@ public class CausalityCodelet extends Codelet {
                 if(debug) System.out.print(" red L = "+mostRecentInput_red+", size: "+mostRecentInput_red.size()+" \n blue L = "+mostRecentInput_blue+", size: "+mostRecentInput_blue.size());
                 
                 if(mostRecentInput_red.size() > 2 && mostRecentInput_blue.size() > 2){
-                    check_end_table(mostRecentInput_red, mostRecentInput_blue);
-
+                   
                     labels_r.add(mostRecentInput_red);
                     labels_b.add(mostRecentInput_blue);
-
+                    
                     MemoryObject redi = (MemoryObject) input_red_idea.get(input_red_idea.size()-i-2);
                     List<Float> mostRecentInput_redi = (List<Float>) redi.getI();
                     MemoryObject bluei = (MemoryObject) input_blue_idea.get(input_blue_idea.size()-i-2);
