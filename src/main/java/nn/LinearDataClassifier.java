@@ -48,12 +48,6 @@ import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator;
 import org.deeplearning4j.datasets.iterator.impl.ListDataSetIterator;
 import org.deeplearning4j.eval.RegressionEvaluation;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 import org.nd4j.linalg.dataset.SplitTestAndTrain;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.indexing.INDArrayIndex;
@@ -134,7 +128,6 @@ public class LinearDataClassifier {
             
             ArrayList<DataSet> DataSetList = new ArrayList<>();
             DataSetList.add(iterator.next());
-            plotDataset(DataSetList); //Plot the data, make sure we have the right data.
            //    SplitTestAndTrain split     = ds.splitTestAndTrain(0.5);
         }
        this.trainIter  = iterator.next();
@@ -175,46 +168,7 @@ public class LinearDataClassifier {
    
 
     
-    /**
-     * Generate an xy plot of the datasets provided.
-     */
-    private static void plotDataset(ArrayList<DataSet> DataSetList) {
 
-        XYSeriesCollection c = new XYSeriesCollection();
-
-        int dscounter = 1; //use to name the dataseries
-        for (DataSet ds : DataSetList) {
-            INDArray features = ds.getFeatures();
-            INDArray outputs = ds.getLabels();
-
-            int nRows = features.rows();
-            XYSeries series = new XYSeries("S" + dscounter);
-            for (int i = 0; i < nRows; i++) {
-                series.add(features.getDouble(i), outputs.getDouble(i));
-            }
-
-            c.addSeries(series);
-        }
-
-        String title = "title";
-        String xAxisLabel = "xAxisLabel";
-        String yAxisLabel = "yAxisLabel";
-        PlotOrientation orientation = PlotOrientation.VERTICAL;
-        boolean legend = false;
-        boolean tooltips = false;
-        boolean urls = false;
-        //noinspection ConstantConditions
-        JFreeChart chart = ChartFactory.createScatterPlot(title, xAxisLabel, yAxisLabel, c, orientation, legend, tooltips, urls);
-        JPanel panel = new ChartPanel(chart);
-
-        JFrame f = new JFrame();
-        f.add(panel);
-        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        f.pack();
-        f.setTitle("Training Data");
-
-        f.setVisible(true);
-    }
     
         private void printToFile(Object object, String file){
         //if(this.num_exp == 1 || this.num_exp%10 == 0){

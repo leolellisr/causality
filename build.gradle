@@ -7,7 +7,7 @@ plugins {
         id 'java-library'
 }
 
-mainClassName = 'cst_Causality_app.CST_Causality_App'
+mainClassName = 'cst_attmod_app.CST_Causality_App'
 
 repositories {
     flatDir {
@@ -15,15 +15,8 @@ repositories {
     }
     jcenter()
     mavenCentral()
-    maven {
-        url "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
-    }
-    maven {
-        url "https://repository.springsource.com/maven/bundles/release"
-    }
-    maven {
-        url "https://repository.springsource.com/maven/bundles/external"
-    }
+    maven { url "https://github.com/rosjava/rosjava_mvn_repo/raw/master" }
+
     maven { 
     	url 'https://jitpack.io'
     }
@@ -42,45 +35,45 @@ dependencies {
 
 // CST
 //api group: 'com.github.CST-Group', name: 'cst', version:versionCST
-//implementation 'com.github.CST-Group:cst:1.2.0'
+implementation 'com.github.CST-Group:cst:1.4.2'
 
 
 // JUNIT
 testImplementation group: 'junit', name: 'junit', version:versionJunit
 
-implementation 'com.github.CST-Group:cst-desktop:1.0.5'
+//implementation 'com.github.CST-Group:cst-desktop:1.0.6'
+
+
+// Neptune
+implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+
 
 // bytedeco
 implementation group: 'org.bytedeco', name: 'javacpp', version:versionBytedeco
 
 // DL4J
 implementation group: 'org.deeplearning4j', name: 'deeplearning4j-core', version:versionDL4J 
-//implementation group: 'org.deeplearning4j', name: 'rl4j-core', version:versionDL4J
-
-//implementation group: 'org.deeplearning4j', name: 'deeplearning4j-core', version:versionRL4J 
-//implementation group: 'org.deeplearning4j', name: 'rl4j-core', version:versionRL4J
+implementation group: 'org.deeplearning4j', name: 'rl4j-core', version:versionDL4J
 
 // lombok
 implementation group: 'org.projectlombok', name: 'lombok', version:versionLombok
 annotationProcessor group: 'org.projectlombok', name: 'lombok', version:versionLombok
 
 // ND4J
-//implementation group: 'org.nd4j', name: 'nd4j-native', version:'1.0.0-beta4'
-implementation group: 'org.nd4j', name: 'nd4j-native-platform', version:versionND4J
+implementation group: 'org.nd4j', name: 'nd4j-native', version:versionDL4J
+implementation group: 'org.nd4j', name: 'nd4j-native-platform', version:versionDL4J
 
 // SLF4J
 implementation group: 'org.slf4j', name: 'slf4j-api', version:versionSLF4J
-implementation group: 'org.slf4j', name: 'slf4j-simple', version:versionSLF4J
+implementation 'ch.qos.logback:logback-classic:1.2.11'
 
-// JUNIT
-testImplementation group: 'junit', name: 'junit', version:versionJunit
-
+implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
 
 }
 
 task uberJar(type: Jar) {
     archiveClassifier = 'full'
-    setProperty("zip64", true)
     manifest {
       attributes(
         'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
@@ -93,8 +86,6 @@ task uberJar(type: Jar) {
         configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
     }
 }
-
-
 artifacts
 {
     archives uberJar

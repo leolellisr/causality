@@ -12,7 +12,6 @@
  
 package cst_Causality_app;
 
-import br.unicamp.cst.util.viewer.MindViewer;
 import outsideCommunication.OutsideCommunication;
 
 import java.io.File;
