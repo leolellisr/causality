@@ -1,26 +1,40 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import ast
+STEP0 = 15000 # Subsampling rate
+STEP1 = 15500
+zero_len = 4500
 
-STEP0 = 100 # Subsampling rate
-STEP1 = 200
 def get_data(file):
     x, y = [], []
     with open(file, "r") as f:
-        data = f.readlines()
-    for line in data:
-        col = line.split(' ')
-        x.append(eval(col[1]))
-        y.append(eval(col[2]))
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                timestamp, vector_str = line.split(' ', 1)
+                vector = ast.literal_eval(vector_str)
+
+                # Flatten if it's a list of list
+                if isinstance(vector[0], list):
+                    vector = vector[0]
+
+                x.append(vector[0])
+                y.append(vector[1])
+            except Exception as e:
+                print(f"Error processing line: {line}")
+                print(f"Exception: {e}")
     return x, y
 
-def moving_average(data, window=5):
+def moving_average(data, window):
     return np.convolve(data, np.ones(window)/window, mode='valid')
 
 # Load data (you can adapt this to paths in your environment)
 file_r = '../profile/position_Ball.txt'
 file_b = '../profile/position_NAO1.txt'
-pred_r = '../profile/causal_red_nn.txt'
-pred_b = '../profile/causal_blue_nn.txt'
+pred_r = '../profile/causal_Ball_nn.txt'
+pred_b = '../profile/causal_NAO_nn.txt'
 
 x_r, y_r = get_data(file_r)
 x_b, y_b = get_data(file_b)
@@ -31,8 +45,15 @@ px_b, py_b = get_data(pred_b)
 min_len_r = min(len(x_r), len(px_r))
 min_len_b = min(len(x_b), len(px_b))
 
-x_r, y_r, px_r, py_r = x_r[:min_len_r], y_r[:min_len_r], px_r[:min_len_r], py_r[:min_len_r]
-x_b, y_b, px_b, py_b = x_b[:min_len_b], y_b[:min_len_b], px_b[:min_len_b], py_b[:min_len_b]
+
+x_r, y_r, px_r, py_r = x_r[zero_len:min_len_r], y_r[zero_len:min_len_r], px_r[zero_len:min_len_r], py_r[zero_len:min_len_r]
+x_b, y_b, px_b, py_b = x_b[zero_len:min_len_b], y_b[zero_len:min_len_b], px_b[zero_len:min_len_b], py_b[zero_len:min_len_b]
+
+
+
+# Compute errors
+err_r = np.sqrt((np.array(px_r) - np.array(x_r))**2 + (np.array(py_r) - np.array(y_r))**2)
+err_b = np.sqrt((np.array(px_b) - np.array(x_b))**2 + (np.array(py_b) - np.array(y_b))**2)
 
 # Subsample
 x_r_s, y_r_s = x_r[STEP0:STEP1], y_r[STEP0:STEP1]
@@ -40,14 +61,18 @@ px_r_s, py_r_s = px_r[STEP0:STEP1], py_r[STEP0:STEP1]
 x_b_s, y_b_s = x_b[STEP0:STEP1], y_b[STEP0:STEP1]
 px_b_s, py_b_s = px_b[STEP0:STEP1], py_b[STEP0:STEP1]
 
-# Compute errors
-err_r = np.sqrt((np.array(px_r_s) - np.array(x_r_s))**2 + (np.array(py_r_s) - np.array(y_r_s))**2)
-err_b = np.sqrt((np.array(px_b_s) - np.array(x_b_s))**2 + (np.array(py_b_s) - np.array(y_b_s))**2)
-
 # Smooth errors
-smoothed_err_r = moving_average(err_r)
-smoothed_err_b = moving_average(err_b)
+smoothed_err_r = moving_average(err_r, 1000)
+smoothed_err_b = moving_average(err_b, 1000)
 
+x_r_s = moving_average(x_r_s, 10)
+y_r_s = moving_average(y_r_s, 10)
+px_r_s = moving_average(px_r_s, 10)
+py_r_s = moving_average(py_r_s, 10)
+x_b_s = moving_average(x_b_s, 10)
+y_b_s = moving_average(y_b_s, 10)
+px_b_s = moving_average(px_b_s, 10)
+py_b_s = moving_average(py_b_s, 10)
 # Plotting
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
 
@@ -99,7 +124,7 @@ ax2.annotate(f"Max: {err_r[max_idx_r]:.2f}",
              arrowprops=dict(arrowstyle='->', color='orange'), fontsize=8)
 
 ax2.set_title("Prediction Error Over Time")
-ax2.set_xlabel(f'Time Step (every {str(STEP1-STEP0)} frames)')
+ax2.set_xlabel(f'Time Step')
 ax2.set_ylabel('Euclidean Error')
 ax2.grid(True, linestyle='--', alpha=0.3)
 ax2.legend()

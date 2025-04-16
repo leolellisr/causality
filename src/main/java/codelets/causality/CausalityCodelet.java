@@ -170,7 +170,7 @@ public class CausalityCodelet extends Codelet {
             INDArray labels_ba = Nd4j.create(convert(labels_b));
             INDArray input_ba = Nd4j.create(convert(inputs_b));
             System.out.print("\n step = "+this.step+"\n");
-            if(step>1000) System.exit(1);
+            if(step>100000) System.exit(1);
             try {
                     // correspondending list with expected output values, 4 training samples
                     // with data for 2 output-neurons each
