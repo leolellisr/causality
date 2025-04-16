@@ -1,164 +1,110 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+STEP0 = 100 # Subsampling rate
+STEP1 = 200
+def get_data(file):
+    x, y = [], []
+    with open(file, "r") as f:
+        data = f.readlines()
+    for line in data:
+        col = line.split(' ')
+        x.append(eval(col[1]))
+        y.append(eval(col[2]))
+    return x, y
 
-#Plota trajetoria 
+def moving_average(data, window=5):
+    return np.convolve(data, np.ones(window)/window, mode='valid')
 
-i = 0
-file_r = '../profile/position_red.txt'
-file_b = '../profile/position_blue.txt'
+# Load data (you can adapt this to paths in your environment)
+file_r = '../profile/position_Ball.txt'
+file_b = '../profile/position_NAO1.txt'
 pred_r = '../profile/causal_red_nn.txt'
 pred_b = '../profile/causal_blue_nn.txt'
-debug = True 
-
-def get_data(file):
-	x = []
-	y = []
-
-	with open(file,"r") as f: # Open file
-		name = file.split('.')[-2] 
-		if debug: 
-			print(f"name.split('/') len: {len(name.split('/'))}")
-			print(name)
-			print(name.split('/'))
-		data = f.readlines()
-	
-	for line in data: 
-		col = line.split(' ') 
-		id = col[0]
-		x.append(float(col[1]))
-		y.append(float(col[2]))
-	return x,y 
-
-def remove_strings_from_file(file_name, strings_to_remove):
-    try:
-        with open(file_name, 'r') as file:
-            lines = file.readlines()
-
-        # Open a new file for writing
-        with open(file_name, 'w') as f:
-            # Iterate through each line in the input file
-            
-            for line in lines:
-                line = line.replace("     ", " ")
-                line = line.replace("    ", " ")
-                line = line.replace("   ", " ")
-                line = line.replace("  ", " ")
-                # Split the line by whitespace and keep only the elements from index 1 onwards
-                elements = line.split(' ')[1:]
-                # Join the elements back into a string and write to the output file
-                f.write(' '.join(elements))
-                
-        with open(file_name, 'w') as file:
-            for line in lines:
-                for string_to_remove in strings_to_remove:
-                    line = line.replace(string_to_remove, '')
-                    #line = line.replace(',', '\n')
-                file.write(line)
-        
-        print("Strings removed successfully!")
-    except FileNotFoundError:
-        print(f"File '{file_name}' not found.")
-
-## Clean Data
-
-# List of strings to remove
-strings_to_remove = [
-    ",","[","]","Exp number:", "Action num: ", "Battery: ", "reward: ",
-    "Curiosity_lv: ", "Red: ", "Green: ", "Blue: ","action:","mot_value: ",
-    "r_imp: ","g_imp: ","b_imp: ", "hug_drive: ", "cur_drive: "
-]
-
-remove_strings_from_file(file_r, strings_to_remove)
-remove_strings_from_file(file_b, strings_to_remove)
-remove_strings_from_file(pred_r, strings_to_remove)
-remove_strings_from_file(pred_b, strings_to_remove)
 
 x_r, y_r = get_data(file_r)
-print(len(x_r))
-print(f"xr: {x_r[len(x_r)-1]}, yr: {y_r[len(y_r)-1]}")
 x_b, y_b = get_data(file_b)
-print(f"xb: {x_b[len(x_b)-1]}, yb: {y_b[len(y_b)-1]}")
-
 px_r, py_r = get_data(pred_r)
-print(f"pxr: {px_r[len(px_r)-1]}, py_r: {py_r[len(py_r)-1]}")
 px_b, py_b = get_data(pred_b)
-print(f"xb: {px_b[len(px_b)-1]}, py_b: {py_b[len(py_b)-1]}")
 
-# Plot trajectory
-fig, ax = plt.subplots(figsize=(6, 6))
+# Truncate lengths to match
+min_len_r = min(len(x_r), len(px_r))
+min_len_b = min(len(x_b), len(px_b))
 
-posTupR = []
-for xi,yi in zip(x_r,y_r):
-    posTupR.append((xi,yi))
-posX, posY = zip(*posTupR)
+x_r, y_r, px_r, py_r = x_r[:min_len_r], y_r[:min_len_r], px_r[:min_len_r], py_r[:min_len_r]
+x_b, y_b, px_b, py_b = x_b[:min_len_b], y_b[:min_len_b], px_b[:min_len_b], py_b[:min_len_b]
 
-x_ini = x_r[0]
-y_ini = y_r[0]
+# Subsample
+x_r_s, y_r_s = x_r[STEP0:STEP1], y_r[STEP0:STEP1]
+px_r_s, py_r_s = px_r[STEP0:STEP1], py_r[STEP0:STEP1]
+x_b_s, y_b_s = x_b[STEP0:STEP1], y_b[STEP0:STEP1]
+px_b_s, py_b_s = px_b[STEP0:STEP1], py_b[STEP0:STEP1]
 
-x_fim = x_r[len(x_r)-1]
-y_fim = y_r[len(y_r)-1]
+# Compute errors
+err_r = np.sqrt((np.array(px_r_s) - np.array(x_r_s))**2 + (np.array(py_r_s) - np.array(y_r_s))**2)
+err_b = np.sqrt((np.array(px_b_s) - np.array(x_b_s))**2 + (np.array(py_b_s) - np.array(y_b_s))**2)
 
+# Smooth errors
+smoothed_err_r = moving_average(err_r)
+smoothed_err_b = moving_average(err_b)
 
-ax.scatter(x_r, y_r, c='pink', label = 'red ball', s=10)
-ax.scatter(x_ini,y_ini,c='m',marker='<', s=100, zorder=3, label = 'Start red')
-ax.scatter(x_fim,y_fim,c='pink',marker='D', s=100,  zorder=3, label = 'End red')
+# Plotting
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
 
+# --- Trajectory Plot ---
+# Actual paths
+ax1.plot(x_r_s, y_r_s, color='pink', label='Ball')
+ax1.plot(x_b_s, y_b_s, color='blue', label='Kicker')
 
-posTupB = []
-for xi,yi in zip(x_b,y_b):
-    posTupB.append((xi,yi))
-posX, posY = zip(*posTupB)
+# Predicted paths
+ax1.plot(px_r_s, py_r_s, '--', color='red', label='Pred Ball')
+ax1.plot(px_b_s, py_b_s, '--', color='cyan', label='Pred Kicker')
 
-x_ini = x_b[0]
-y_ini = y_b[0]
+# Start and end points
+ax1.scatter([x_r[0]], [y_r[0]], c='m', marker='<', s=100, label='Start Ball')
+ax1.scatter([x_r[-1]], [y_r[-1]], c='pink', marker='D', s=100, label='End Ball')
+ax1.scatter([x_b[0]], [y_b[0]], c='darkslateblue', marker='<', s=100, label='Start Kicker')
+ax1.scatter([x_b[-1]], [y_b[-1]], c='indigo', marker='D', s=100, label='End Kicker')
 
-x_fim = x_b[len(x_b)-1]
-y_fim = y_b[len(y_b)-1]
+# Direction arrows (every 5th step)
+for i in range(0, len(x_r_s)-1, 5):
+    ax1.annotate('', xy=(x_r_s[i+1], y_r_s[i+1]), xytext=(x_r_s[i], y_r_s[i]),
+                 arrowprops=dict(arrowstyle='->', color='pink', lw=0.5))
+for i in range(0, len(x_b_s)-1, 5):
+    ax1.annotate('', xy=(x_b_s[i+1], y_b_s[i+1]), xytext=(x_b_s[i], y_b_s[i]),
+                 arrowprops=dict(arrowstyle='->', color='blue', lw=0.5))
 
+ax1.set_title("Trajectory")
+ax1.set_xlabel("x")
+ax1.set_ylabel("y")
+ax1.grid(True, linestyle='--', alpha=0.3)
+ax1.legend()
 
-ax.scatter(x_b, y_b, c='blue', label = 'blue ball', s=10)
-ax.scatter(x_ini,y_ini,c='darkslateblue',marker='<', s=100, zorder=3, label = 'Start blue')
-ax.scatter(x_fim,y_fim,c='indigo',marker='D', s=100,  zorder=3, label = 'End blue')
+# --- Error Plot ---
+time_r = range(len(smoothed_err_r))
+time_b = range(len(smoothed_err_b))
 
-# Plot trajectory
-posTupPR = []
-for xi,yi in zip(px_r,py_r):
-    posTupPR.append((xi,yi))
-posX, posY = zip(*posTupR)
+ax2.plot(time_r, smoothed_err_r, label='Ball Error (smoothed)', color='orange')
+ax2.plot(time_b, smoothed_err_b, label='Kicker Error (smoothed)', color='green')
 
-x_ini = px_r[0]
-y_ini = py_r[0]
+# Mean lines
+ax2.axhline(np.mean(err_r), color='orange', linestyle=':', label=f'Ball Avg: {np.mean(err_r):.2f}')
+ax2.axhline(np.mean(err_b), color='green', linestyle=':', label=f'Kicker Avg: {np.mean(err_b):.2f}')
 
-x_fim = px_r[len(px_r)-1]
-y_fim = py_r[len(py_r)-1]
+# Max point annotation
+max_idx_r = np.argmax(err_r)
+ax2.annotate(f"Max: {err_r[max_idx_r]:.2f}", 
+             xy=(max_idx_r, err_r[max_idx_r]), 
+             xytext=(max_idx_r+1, err_r[max_idx_r]+0.5),
+             arrowprops=dict(arrowstyle='->', color='orange'), fontsize=8)
 
+ax2.set_title("Prediction Error Over Time")
+ax2.set_xlabel(f'Time Step (every {str(STEP1-STEP0)} frames)')
+ax2.set_ylabel('Euclidean Error')
+ax2.grid(True, linestyle='--', alpha=0.3)
+ax2.legend()
 
-ax.scatter(px_r, py_r, c='red', label = 'pred red ball', s=10)
-ax.scatter(x_ini,y_ini,c='r',marker='<', s=100, zorder=3, label = 'Start pred red')
-ax.scatter(x_fim,y_fim,c='red',marker='D', s=100,  zorder=3, label = 'End pred red')
-
-# Plot trajectory
-posTupPB = []
-for xi,yi in zip(px_b,py_b):
-    posTupPB.append((xi,yi))
-posX, posY = zip(*posTupB)
-
-x_ini = px_b[0]
-y_ini = py_b[0]
-
-x_fim = px_b[len(px_b)-1]
-y_fim = py_b[len(py_b)-1]
-
-
-ax.scatter(px_b, py_b, c='cyan', label = 'pred blue ball', s=10)
-ax.scatter(x_ini,y_ini,c='c',marker='<', s=100, zorder=3, label = 'Start pred blue')
-ax.scatter(x_fim,y_fim,c='cyan',marker='D', s=100,  zorder=3, label = 'End pred blue')
-
-ax.grid(True)
-ax.legend(loc='best')
-plt.title("Trajectory")
-plt.xlabel("x")
-plt.ylabel("y")
-plt.savefig('trajectory'+'.pdf')
+# Save and show
+plt.tight_layout()
+plt.savefig('trajectory_and_error_lineplot_improved.pdf', dpi=300)
 plt.show()

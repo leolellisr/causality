@@ -51,7 +51,6 @@ public class AgentMind extends Mind {
         //////////////////////////////////////////////
         //Declare Memory Objects
         //////////////////////////////////////////////
-        oc.joint_m.setPos(50);
         //Position
         List posR_data = Collections.synchronizedList(new ArrayList<Float>(Posdimension));
         MemoryObject posR_read = createMemoryObject("POSR", posR_data);

@@ -34,7 +34,7 @@ import org.nd4j.linalg.factory.Nd4j;
 public class CausalityCodelet extends Codelet {
     private MemoryObject input_redMO;
     private SensorI position;
-    private int dimension;
+    private int dimension, step = 0;
     private  boolean reset = true;
     private static boolean debug = false;
     private String input_red, input_blue, output;
@@ -94,7 +94,6 @@ public class CausalityCodelet extends Codelet {
     
     @Override
     public void proc() {
-        this.oc.joint_m.setPos(oc.velocity);
         //this.oc.run();
     	try {
             Thread.sleep(50);
@@ -164,10 +163,11 @@ public class CausalityCodelet extends Codelet {
                     Logger.getLogger(CausalityCodelet.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-
+            step += 1;
             INDArray labels_ba = Nd4j.create(convert(labels_b));
             INDArray input_ba = Nd4j.create(convert(inputs_b));
-
+            System.out.print(" step = "+this.step);
+            if(step>1000) System.exit(1);
             try {
                     // correspondending list with expected output values, 4 training samples
                     // with data for 2 output-neurons each

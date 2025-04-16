@@ -116,7 +116,7 @@ public class OutsideCommunication {
 		//////////////////////////////////////////////////////////////////
 		
 
-		String objR_sensors_name = "red";
+		String objR_sensors_name = "Ball";
 		objR_handle = new IntW(-1);
 		vrep.simxGetObjectHandle(clientID, objR_sensors_name, objR_handle, remoteApi.simx_opmode_blocking);
 			if (objR_handle.getValue() == -1 && debug)
@@ -125,20 +125,20 @@ public class OutsideCommunication {
 				System.out.println("Connected to sensor ");
 		
 
-		this.positionR = new PosVrep(this, vrep, clientID, objR_handle, "red");
+		this.positionR = new PosVrep(this, vrep, clientID, objR_handle, "Ball");
                 ArrayList<FloatWA> getDataPos=this.positionR.getDataPos();
                 getDataPos=this.positionR.getDataPos();
                 getDataPos=this.positionR.getDataPos();
                 this.position0r = getDataPos.get(0);
                 this.orientation0r = getDataPos.get(1);
                 if(debug) {
-                System.out.println("red pos x: "+this.position0r.getArray()[0]);
-                System.out.println("red pos y: "+this.position0r.getArray()[1]);
-                System.out.println("red pos z: "+this.position0r.getArray()[2]);
-                System.out.println("red ori: "+this.orientation0r.getArray()[0]);
+                System.out.println("ball pos x: "+this.position0r.getArray()[0]);
+                System.out.println("ball pos y: "+this.position0r.getArray()[1]);
+                System.out.println("ball pos z: "+this.position0r.getArray()[2]);
+                System.out.println("ball ori: "+this.orientation0r.getArray()[0]);
                 }
 
-		String objB_sensors_name = "blue";
+		String objB_sensors_name = "NAO1";
 		this.objB_handle = new IntW(-1);
 		vrep.simxGetObjectHandle(clientID, objB_sensors_name, objB_handle, remoteApi.simx_opmode_blocking);
 			if (objB_handle.getValue() == -1)
@@ -147,53 +147,20 @@ public class OutsideCommunication {
 				System.out.println("Connected to sensor ");
 		
 
-		this.positionB = new PosVrep(this, vrep, clientID, objB_handle, "blue");
+		this.positionB = new PosVrep(this, vrep, clientID, objB_handle, "NAO1");
                 getDataPos=this.positionB.getDataPos();
                 getDataPos=this.positionB.getDataPos();
                 this.position0b = getDataPos.get(0);
                 this.orientation0b = getDataPos.get(1);
                 if(debug) {
-                System.out.println("Blue pos x: "+this.position0b.getArray()[0]);
-                System.out.println("Blue pos y: "+this.position0b.getArray()[1]);
-                System.out.println("Blue pos z: "+this.position0b.getArray()[2]);
-                System.out.println("Blue ori: "+this.orientation0b.getArray()[0]);
+                System.out.println("NAO  pos x: "+this.position0b.getArray()[0]);
+                System.out.println("NAO  pos y: "+this.position0b.getArray()[1]);
+                System.out.println("NAO  pos z: "+this.position0b.getArray()[2]);
+                System.out.println("NAO  ori: "+this.orientation0b.getArray()[0]);
                 }
                 joint = new IntW(-1);
            
-                vrep.simxGetObjectHandle(clientID, "Prismatic_joint", joint, remoteApi.simx_opmode_blocking);
-			if (joint.getValue() == -1)
-				System.out.println("Error on connenting to joint ");
-			else
-				System.out.println("Connected to joint ");
-		
-
-		PosVrep positionj = new PosVrep(this, vrep, clientID, joint,"joint");
-                getDataPos=positionj.getDataPos();
-                getDataPos=positionj.getDataPos();
-                getDataPos=positionj.getDataPos();
-                this.position0j = getDataPos.get(0);
-                this.orientation0j = getDataPos.get(1);
-                
-                sphere = new IntW(-1);
-           
-                vrep.simxGetObjectHandle(clientID, "Sphere", sphere, remoteApi.simx_opmode_blocking);
-			if (sphere.getValue() == -1 && debug)
-				System.out.println("Error on connenting to sphere ");
-			else
-				System.out.println("Connected to sphere ");
-		
-
-		PosVrep positions = new PosVrep(this, vrep, clientID, sphere,"sphere");
-                getDataPos=positions.getDataPos();
-                getDataPos=positions.getDataPos();
-                getDataPos=positions.getDataPos();
-                this.position0s = getDataPos.get(0);
-                this.orientation0s = getDataPos.get(1);
-                
-		vrep.simxGetObjectHandle(clientID, "Prismatic_joint", joint, remoteApi.simx_opmode_blocking);
-	
-		
-		this.joint_m = new MotorVrep(vrep, clientID, joint.getValue());
+               
                 
                 //this.joint_m.setPos(50);
                 
