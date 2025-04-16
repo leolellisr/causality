@@ -51,6 +51,7 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.dataset.SplitTestAndTrain;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.indexing.INDArrayIndex;
+import outsideCommunication.OutsideCommunication;
 
 /**
  * "Linear" Data Classification Example
@@ -79,14 +80,15 @@ public class LinearDataClassifier {
     private boolean debug = false;
     private int time_graph;
     private double best_eval = 1;
-    public LinearDataClassifier(int seed, double learningRate, int batchSize, int nEpochs, 
+    private OutsideCommunication oc;
+    public LinearDataClassifier(OutsideCommunication oc,int seed, double learningRate, int batchSize, int nEpochs, 
             int numInputs, int numOutputs, int numHiddenNodes, String name, boolean load) throws IOException{
         time_graph = 0;
         this.seeds = seed;
         this.learningRate = learningRate;
         this.batchSize = batchSize;
         this.nEpochs = nEpochs;
-
+        this.oc = oc;
         this.numInputs = numInputs;
         this.numOutputs = numOutputs;
         this.numHiddenNodes = numHiddenNodes;
@@ -159,9 +161,9 @@ public class LinearDataClassifier {
         
         }
         //Print the evaluation statistics
-       System.out.println(eval.stats());
-       
-       System.out.println("\n****************Example finished********************");
+       //System.out.println(eval.stats());
+       printToFile(eval.stats(),this.name+"_stats");
+       //System.out.println("\n****************Example finished********************");
        
        
    }
@@ -177,7 +179,7 @@ public class LinearDataClassifier {
         try(FileWriter fw = new FileWriter("profile/causal_"+file+".txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw)){
-            out.println(dtf.format(now)+"_"+time_graph+" "+ object);
+            out.println(dtf.format(now)+"_"+oc.positionR.getExp()+"_"+oc.positionR.getStep()+" "+ object);
                 //if(time_graph == max_time_graph-1) System.out.println(dtf.format(now)+"vision: "+time_graph);
             time_graph++;
             out.close();

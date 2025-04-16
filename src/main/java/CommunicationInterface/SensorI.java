@@ -23,6 +23,8 @@ import java.util.ArrayList;
 public interface SensorI {
     public void setExp(int exp);
     public int getExp();
+    public void setStep(int exp);
+    public int getStep();
     public Object getData();
     public String getObjHandle();
     public int getStage();

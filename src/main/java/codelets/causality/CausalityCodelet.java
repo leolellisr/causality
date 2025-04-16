@@ -52,9 +52,9 @@ public class CausalityCodelet extends Codelet {
         int numRows=10;
         int numColumns=10;
         
-          this.nn_r = new LinearDataClassifier(1233, 0.01, 5, 10, numColumns, numColumns, 20, "red_nn",load);
+          this.nn_r = new LinearDataClassifier(oc,1233, 0.01, 5, 10, numColumns, numColumns, 20, "Ball_nn",load);
 
-          this.nn_b = new LinearDataClassifier(1234, 0.01, 5, 10, numColumns, numColumns, 20, "blue_nn",load);
+          this.nn_b = new LinearDataClassifier(oc,1234, 0.01, 5, 10, numColumns, numColumns, 20, "NAO_nn",load);
           
     }
     
@@ -142,10 +142,10 @@ public class CausalityCodelet extends Codelet {
                 i+=1;
                 }
                 
-                if(debug) {
-                    System.out.print(" sizes. ir:"+inputs_r.size()+"ib:"+inputs_b.size());
-                    System.out.print(" sizes. lr:"+labels_r.size()+"lb:"+labels_b.size());
-                }
+                
+                    //System.out.print(" sizes. ir:"+inputs_r.size()+"ib:"+inputs_b.size());
+                    //System.out.print(" sizes. lr:"+labels_r.size()+"lb:"+labels_b.size());
+                
                   // list off input values, 4 training samples with data for 2
         // input-neurons each
                 
@@ -164,9 +164,12 @@ public class CausalityCodelet extends Codelet {
             }
 
             step += 1;
+            oc.positionR.setStep(step);
+            oc.positionB.setStep(step);
+            
             INDArray labels_ba = Nd4j.create(convert(labels_b));
             INDArray input_ba = Nd4j.create(convert(inputs_b));
-            System.out.print(" step = "+this.step);
+            System.out.print("\n step = "+this.step+"\n");
             if(step>1000) System.exit(1);
             try {
                     // correspondending list with expected output values, 4 training samples

@@ -122,7 +122,7 @@ public class OutsideCommunication {
 			if (objR_handle.getValue() == -1 && debug)
 				System.out.println("Error on connenting to sensor ");
 			else
-				System.out.println("Connected to sensor ");
+				System.out.println("Connected to sensor "+objR_sensors_name);
 		
 
 		this.positionR = new PosVrep(this, vrep, clientID, objR_handle, "Ball");
@@ -142,12 +142,12 @@ public class OutsideCommunication {
 		this.objB_handle = new IntW(-1);
 		vrep.simxGetObjectHandle(clientID, objB_sensors_name, objB_handle, remoteApi.simx_opmode_blocking);
 			if (objB_handle.getValue() == -1)
-				System.out.println("Error on connenting to sensor ");
+				System.out.println("Error on connenting to sensor "+objB_sensors_name);
 			else
 				System.out.println("Connected to sensor ");
 		
 
-		this.positionB = new PosVrep(this, vrep, clientID, objB_handle, "NAO1");
+		this.positionB = new PosVrep(this, vrep, clientID, objB_handle, objB_sensors_name);
                 getDataPos=this.positionB.getDataPos();
                 getDataPos=this.positionB.getDataPos();
                 this.position0b = getDataPos.get(0);
