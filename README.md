@@ -140,7 +140,7 @@ Three key environmental perturbations were introduced:
 4. **Spatial Complexity Change**  
 
 <p align="center">
-<img src="imgs/test_7players.GIF" alt="Test in environment with change in the number of fixed players.  The position of the attacker and fixed robots is random. The size and weight of the ball are the SPL standards. The coefficient of friction is 0.3. In this test, 7 players are used on each team.  " width="600"/>
+<img src="imgs/test4_7players.GIF" alt="Test in environment with change in the number of fixed players.  The position of the attacker and fixed robots is random. The size and weight of the ball are the SPL standards. The coefficient of friction is 0.3. In this test, 7 players are used on each team.  " width="600"/>
 </p>
 
 ---
