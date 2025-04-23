@@ -164,7 +164,8 @@ To use the models, create a **/profine** folder in the project root and insert t
 
 ### Requirements
 - [CoppeliaSim](https://www.coppeliarobotics.com/)
-- Python (for CST interaction scripts)
+- Java (Main code)
+- Python (for plot scripts)
 - Cognitive Systems Toolkit (CST)
 
 ### Repository
