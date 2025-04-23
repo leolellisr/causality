@@ -57,6 +57,9 @@ public class AgentMind extends Mind {
 
         List posB_data = Collections.synchronizedList(new ArrayList<Float>(Posdimension));
         MemoryObject posB_read = createMemoryObject("POSB", posB_data);
+        
+        List posA_data = Collections.synchronizedList(new ArrayList<Float>(Posdimension));
+        MemoryObject posA_read = createMemoryObject("POSA", posA_data);
 
         //Position buffer
         List posR_buffer_list = Collections.synchronizedList(new ArrayList<Memory>(Buffersize));
@@ -64,6 +67,9 @@ public class AgentMind extends Mind {
 
         List posB_buffer_list = Collections.synchronizedList(new ArrayList<Memory>(Buffersize));
         MemoryObject posB_bufferMO = createMemoryObject("POSB_BUFFER",posB_buffer_list);
+        
+        List posA_buffer_list = Collections.synchronizedList(new ArrayList<Memory>(Buffersize));
+        MemoryObject posA_bufferMO = createMemoryObject("POSA_BUFFER",posB_buffer_list);
         
         //Causality
         Idea causality_idea = new Idea("causality", Collections.synchronizedList(new ArrayList<Object>(Posdimension)), 1);
@@ -84,6 +90,10 @@ public class AgentMind extends Mind {
         positionB.addOutput(posB_read);
         insertCodelet(positionB);
         
+        Codelet positionA = new Sensor_Position(oc.positionA, "POSA");
+        positionA.addOutput(posA_read);
+        insertCodelet(positionA);
+        
         //Sensor Buffers
         Codelet posR_buffer = new SensorBufferCodelet("POSR", "POSR_BUFFER", Buffersize);
         posR_buffer.addInput(posR_read);
@@ -95,9 +105,15 @@ public class AgentMind extends Mind {
         posB_buffer.addOutput(posB_bufferMO);
         insertCodelet(posB_buffer);
         
-        Codelet causality = new CausalityCodelet(oc, "POSR_BUFFER", "POSB_BUFFER", "CAUSALITY", Posdimension, load);
+        Codelet posA_buffer = new SensorBufferCodelet("POSA", "POSA_BUFFER", Buffersize);
+        posA_buffer.addInput(posA_read);
+        posA_buffer.addOutput(posA_bufferMO);
+        insertCodelet(posA_buffer);
+        
+        Codelet causality = new CausalityCodelet(oc, "POSR_BUFFER", "POSB_BUFFER", "POSA_BUFFER", "CAUSALITY", Posdimension, load);
         causality.addInput(posR_bufferMO);
         causality.addInput(posB_bufferMO);
+        causality.addInput(posA_bufferMO);
         causality.addOutput(causalityMO);
         insertCodelet(causality);
         ///////////////////////////////////////////////////////////////

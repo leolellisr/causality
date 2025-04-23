@@ -119,7 +119,7 @@ public class LinearDataClassifier {
   public void setData(INDArray inputs, INDArray labels) throws IOException, InterruptedException{
 
     final DataSet allData = new DataSet(inputs,labels);
-
+    //System.out.println("numExamples trainIter: \n"+inputs.shapeInfoToString()+" \n"+labels.shapeInfoToString());
     final List<DataSet> list = allData.asList();
 
     ListDataSetIterator iterator = new ListDataSetIterator(list, this.batchSize);

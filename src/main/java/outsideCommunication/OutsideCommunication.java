@@ -38,7 +38,7 @@ public class OutsideCommunication {
 	public remoteApi vrep;
 	public int clientID;
 	public SensorI positionR;
-        public SensorI positionB;
+        public SensorI positionB, positionA;
         public IntW[] obj_handle;
         private int nObjs = 2;
         private final boolean debug = false;
@@ -158,9 +158,11 @@ public class OutsideCommunication {
                 System.out.println("NAO  pos z: "+this.position0b.getArray()[2]);
                 System.out.println("NAO  ori: "+this.orientation0b.getArray()[0]);
                 }
-                joint = new IntW(-1);
+                
            
-               
+               this.positionA = new PosVrep(this, vrep, clientID, objB_handle, "players");
+                
+                
                 
                 //this.joint_m.setPos(50);
                 

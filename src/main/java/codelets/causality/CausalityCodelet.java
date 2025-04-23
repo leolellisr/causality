@@ -37,24 +37,25 @@ public class CausalityCodelet extends Codelet {
     private int dimension, step = 0;
     private  boolean reset = true;
     private static boolean debug = false;
-    private String input_red, input_blue, output;
-    private List input_red_idea, input_blue_idea;
+    private String input_red, input_blue, output,input_agents;
+    private List input_red_idea, input_blue_idea, input_ag_idea;
     private Idea output_idea;
     private OutsideCommunication oc;
     private LinearDataClassifier nn_r, nn_b;
 
-    public CausalityCodelet(OutsideCommunication oc,String input_red, String input_blue, String output, int dimension, boolean load) throws IOException{
+    public CausalityCodelet(OutsideCommunication oc,String input_red, String input_blue, String input_agents, String output, int dimension, boolean load) throws IOException{
         this.input_red = input_red;
         this.input_blue = input_blue;
+        this.input_agents = input_agents;
         this.output = output; 
         this.dimension = 0;
         this.oc = oc;
-        int numRows=10;
-        int numColumns=10;
+        int numRows=5;
+        int numColumns=20;
         
-          this.nn_r = new LinearDataClassifier(oc,1233, 0.01, 5, 10, numColumns, numColumns, 20, "Ball_nn",load);
+          this.nn_r = new LinearDataClassifier(oc,1233, 0.01, numRows, 20, numColumns, numColumns, 20, "Ball_nn",load);
 
-          this.nn_b = new LinearDataClassifier(oc,1234, 0.01, 5, 10, numColumns, numColumns, 20, "NAO_nn",load);
+          this.nn_b = new LinearDataClassifier(oc,1234, 0.01, numRows, 20, numColumns, numColumns, 20, "NAO_nn",load);
           
     }
     
@@ -65,6 +66,8 @@ public class CausalityCodelet extends Codelet {
         input_red_idea = (List) MO.getI();
         MO = (MemoryObject) this.getInput(input_blue);
         input_blue_idea = (List) MO.getI();
+        MO = (MemoryObject) this.getInput(input_agents);
+        input_ag_idea = (List) MO.getI();
         MO = (MemoryObject) this.getOutput(output);
         output_idea =  (Idea) MO.getI();
         
@@ -101,18 +104,17 @@ public class CausalityCodelet extends Codelet {
             Thread.currentThread().interrupt();
         }
         
-        if(input_red_idea.size() < 1 || input_blue_idea.size() < 1){
+        if(input_red_idea.size() < 1 || input_blue_idea.size() < 1 || input_ag_idea.size() < 1){
             return;
         }
 
-        if(input_red_idea!= null && input_blue_idea!= null && input_red_idea.get(input_red_idea.size()-1)!= null && input_blue_idea.get(input_blue_idea.size()-1)!= null){
+        if(input_red_idea!= null && input_blue_idea!= null && input_ag_idea!= null && input_red_idea.get(input_red_idea.size()-1)!= null && input_blue_idea.get(input_blue_idea.size()-1)!= null && input_ag_idea.get(input_ag_idea.size()-1)!= null){
 
             
             if(input_red_idea.size() > 13 && input_blue_idea.size() > 13){
 
                 ArrayList<List<Float>> labels_r = new ArrayList<>();
                 ArrayList<List<Float>> labels_b = new ArrayList<>();
-
                 ArrayList<List<Float>> inputs_r = new ArrayList<>();
                 ArrayList<List<Float>> inputs_b = new ArrayList<>();
 
@@ -122,21 +124,38 @@ public class CausalityCodelet extends Codelet {
                 List<Float> mostRecentInput_red = (List<Float>) red.getI();
                 MemoryObject blue = (MemoryObject) input_blue_idea.get(input_blue_idea.size()-i-1);
                 List<Float> mostRecentInput_blue = (List<Float>) blue.getI();
-                
+                MemoryObject agents = (MemoryObject) input_ag_idea.get(input_ag_idea.size()-i-1);
+                List<Float> mostRecentInput_agents = (List<Float>) agents.getI();
                 if(debug) System.out.print(" red L = "+mostRecentInput_red+", size: "+mostRecentInput_red.size()+" \n blue L = "+mostRecentInput_blue+", size: "+mostRecentInput_blue.size());
                 
-                if(mostRecentInput_red.size() > 2 && mostRecentInput_blue.size() > 2){
+                if(mostRecentInput_red.size() > 2 && mostRecentInput_blue.size() > 2 && mostRecentInput_agents.size() > 2){
                    
-                    labels_r.add(mostRecentInput_red);
-                    labels_b.add(mostRecentInput_blue);
+                    
                     
                     MemoryObject redi = (MemoryObject) input_red_idea.get(input_red_idea.size()-i-2);
                     List<Float> mostRecentInput_redi = (List<Float>) redi.getI();
                     MemoryObject bluei = (MemoryObject) input_blue_idea.get(input_blue_idea.size()-i-2);
                     List<Float> mostRecentInput_bluei = (List<Float>) bluei.getI();
                     if(debug) System.out.print(" red i= "+i+" "+mostRecentInput_redi+" \n blue i= "+mostRecentInput_bluei);
-                    inputs_r.add(mostRecentInput_redi);
-                    inputs_b.add(mostRecentInput_bluei);
+                    // Concatenate agents input to red and blue inputs
+                    List<Float> combinedInput_r = new ArrayList<>(mostRecentInput_redi);
+                    combinedInput_r.addAll(mostRecentInput_agents);
+
+                    List<Float> combinedInput_b = new ArrayList<>(mostRecentInput_bluei);
+                    combinedInput_b.addAll(mostRecentInput_agents);
+
+                    inputs_r.add(combinedInput_r);
+                    inputs_b.add(combinedInput_b);
+                    
+                    List<Float> combinedInput_ra = new ArrayList<>(mostRecentInput_red);
+                    combinedInput_ra.addAll(mostRecentInput_agents);
+
+                    List<Float> combinedInput_ba = new ArrayList<>(mostRecentInput_blue);
+                    combinedInput_ba.addAll(mostRecentInput_agents);
+
+                    labels_r.add(combinedInput_ra);
+                    labels_b.add(combinedInput_ba);
+                    
                     j+=1;
                     }
                 i+=1;
@@ -150,7 +169,9 @@ public class CausalityCodelet extends Codelet {
         // input-neurons each
                 
             INDArray labels_ra = Nd4j.create(convert(labels_r));
+           
             INDArray input_ra = Nd4j.create(convert(inputs_r));
+            //System.out.print("\n input_ra: "+input_ra.shapeInfoToString());
 
             try {
                     // correspondending list with expected output values, 4 training samples
@@ -168,9 +189,12 @@ public class CausalityCodelet extends Codelet {
             oc.positionB.setStep(step);
             
             INDArray labels_ba = Nd4j.create(convert(labels_b));
+            
+           int max_steps = 500;
             INDArray input_ba = Nd4j.create(convert(inputs_b));
-            System.out.print("\n step = "+this.step+"\n");
-            if(step>100000) System.exit(1);
+            //System.out.print("\n input_ba; "+input_ba.shapeInfoToString());
+            if(this.step%1000==0) System.out.print("\n step = "+this.step+"/"+max_steps+" - "+this.step/max_steps+"%\n");
+            if(step>max_steps) System.exit(1);
             try {
                     // correspondending list with expected output values, 4 training samples
                     // with data for 2 output-neurons each

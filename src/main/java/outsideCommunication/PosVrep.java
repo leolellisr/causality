@@ -88,16 +88,25 @@ public class PosVrep implements SensorI{
 
         if (this.name.equals("NAO1")) {
             initialPosition = new ArrayList<>();
-            try (BufferedReader br = new BufferedReader(new FileReader("./pos_kicker.txt"))) {
+            try (BufferedReader br = new BufferedReader(new FileReader("/home/leolellisr/git/causality/pos_kicker.txt"))) {
                 String line = br.readLine();
-                if (line != null) {
-                    String[] parts = line.trim().split("\\s+");
+                if (line != null && line.contains("[") && line.contains("]")) {
+                    int start = line.indexOf("[");
+                    int end = line.indexOf("]");
+                    String insideBrackets = line.substring(start + 1, end);
+                    String[] parts = insideBrackets.split(",");
+
+                    // Get first 3 elements (position x, y, z)
                     for (int i = 0; i < Math.min(parts.length, 3); i++) {
-                        initialPosition.add(Float.parseFloat(parts[i]));
+                        initialPosition.add(Float.parseFloat(parts[i].trim()));
                     }
+
+                    System.out.println(name + " initial position from file: " + initialPosition);
+                } else {
+                    System.err.println("Line is invalid or missing brackets: " + line);
                 }
-                System.out.println(name + " initial position from file: " + initialPosition);
-            } catch (IOException e) {
+            }
+             catch (IOException e) {
                 System.err.println("Error reading position file for NAO1: " + e.getMessage());
             }
         }
@@ -221,10 +230,18 @@ public class PosVrep implements SensorI{
         ArrayList<Float> position_array = new ArrayList<>();
         int op_mode = vrep.simx_opmode_buffer;
 
-        if (this.name.equals("NAO1")) {
+        if (this.name.equals("NAO1") || this.name.equals("players")) {
             // Read last NAO1 line from file
+            List<String> allLines ;
             try {
-                List<String> allLines = Files.readAllLines(Paths.get("pos_kicker.txt"));
+                if(this.name.equals("NAO1")){
+                    
+                     allLines = Files.readAllLines(Paths.get("pos_kicker.txt"));
+                }else {
+                    
+                     allLines = Files.readAllLines(Paths.get("players.txt"));
+                }
+                
                 for (int i = allLines.size() - 1; i >= 0; i--) {
                     String line = allLines.get(i);
                     if (line.contains("NAO1:") && line.contains("[") && line.contains("]")) {
@@ -238,9 +255,28 @@ public class PosVrep implements SensorI{
                         }
                         break;
                     }
+                    
+                            // Parse NAO3 to NAO10 (append to matrix)
+                    for (int nao = 3; nao <= 10; nao++) {
+                        if (line.contains("NAO" + nao + ":") && line.contains("[") && line.contains("]")) {
+                            int start = line.indexOf("[");
+                            int end = line.indexOf("]");
+                            String insideBrackets = line.substring(start + 1, end);
+                            String[] parts = insideBrackets.split(",");
+
+                            // Add x, y, z (first 3 values) to the vector
+                            for (int j = 0; j < 3; j++) {
+                                position_array.add(Float.parseFloat(parts[j].trim()));
+                            }
+                        }
+                    }
+                
                 }
+                
+                
+                
             } catch (IOException | NumberFormatException e) {
-                System.err.println("Error reading NAO1 data from file: " + e.getMessage());
+                System.err.println(name+" Error reading data from file: " + e.getMessage());
                 for (int i = 0; i < 10; i++) position_array.add(0f); // fallback in case of error
             }
         } else {
