@@ -149,7 +149,7 @@ Three key environmental perturbations were introduced:
 
 Available [here](https://zenodo.org/records/15271940)!
 
-To use the model, create a **/profine** folder in the project root and insert the files in that folder.
+To use the models, create a **/profine** folder in the project root and insert the files in that folder.
 
 ---
 
