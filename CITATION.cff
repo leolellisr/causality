@@ -1,12 +1,10 @@
 # This CITATION.cff file was generated with cffinit.
 # Visit https://bit.ly/cffinit to generate yours today!
 
-cff-version: 1.2.0
-title: cst-incremental-babybot
+cff-version: 1.0.0
+title: causality
 message: >-
-  Repository for the code of the work submitted to IEEE
-  International Conference on Development and Learning
-  (ICDL-2025).
+  Implementation of causal experiments
 type: software
 authors:
   - given-names: Leonardo
@@ -31,11 +29,6 @@ authors:
     affiliation: >-
       School of Electrical and Computer Engineering,
       University of Campinas
-  - given-names: Letícia
-    name-particle: Mara
-    family-names: Berto
-    email: leticia.berto@ic.unicamp.br
-    affiliation: 'Institute of Computing, University of Campinas'
   - given-names: Alexandre
     family-names: Simões
     affiliation: >-
@@ -46,19 +39,15 @@ identifiers:
   - type: doi
     value: 10.5281/zenodo.15133064
     description: Zenodo DOI
-repository-code: 'https://github.com/H-IAAC/cst-incremental-babybot'
+repository-code: 'https://github.com/leolellisr/causality'
 repository-artifact: >-
-  https://github.com/H-IAAC/cst-incremental-babybot/releases/tag/v1.0.0
+  https://github.com/leolellisr/causality/releases/tag/v1.0.0
 abstract: >-
-  Repository for the code of the work submitted to IEEE
-  International Conference on Development and Learning
-  (ICDL-2025).
+  Implementation of causal experiments
 keywords:
-  - Incremental Learning
-  - Reinforcement Learning
-  - Object Tracking
-  - Object Permanence
-  - Cognitive Robotics
+- cognitive-science 
+- causality 
+- cognitive-robotics
 license: LGPL-2.1
 commit: main
 version: v1.0.0
