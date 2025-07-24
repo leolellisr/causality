@@ -9,7 +9,7 @@ The code for the work **"Dribble in the Mind: Exploring Causality with Cognitive
 
 ## Banner
 
-Dribble in the Mind Banner: [Available Here!](banner/poster_SymposiumRobocup25_Dribble in the mind_2025.pdf)
+"Dribble in the Mind" Banner: [Available Here!](banner/poster_SymposiumRobocup25_Dribble in the mind_2025.pdf)
 
 
 ## Setup
