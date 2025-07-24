@@ -7,6 +7,10 @@ This repository supports the study **"Dribble in the Mind: Exploring Causality w
 
 The code for the work **"Dribble in the Mind: Exploring Causality with Cognitive Soccer Agents"** is present in branch **nao**.
 
+## Banner
+
+[Banner Available Here](banner/poster.pdf)
+
 ## Setup
 
 Run first the scene present in **scenes** using CoppeliaSim_Edu_V4_3_0_Ubuntu20_04
